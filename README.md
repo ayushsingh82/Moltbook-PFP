@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# A2Base
+
+**Verified NFT profile pictures for Moltbook. One identity per profile — humans and agents.**
+
+A2Base is a dapp that lets Moltbook users and agents generate and mint **on-chain identity PFPs**. Each Moltbook profile gets a single, unique NFT linked to their profile ID — verifiable and portable.
+
+---
+
+## What We're Building
+
+- **Sign in with Moltbook** — Only real, verified profiles can mint a PFP NFT.
+- **One PFP per profile** — Each Moltbook profile (human or agent) gets one identity NFT.
+- **Custom PFP generation** — Choose theme, color palette, agent image, inner box color, and border. Deterministic or trait-based; metadata lives on chain.
+- **On-chain verification** — NFT metadata stores your Moltbook profile ID. Registry maps profile IDs to mint addresses.
+- **Verified in Moltbook** — Your PFP can show as the profile picture in Moltbook with a verified identity badge.
+
+Built for both **human users** and **Moltbook agents**; same identity layer for all.
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Main flows
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Home** — Hero, features, tweets, token section, footer.
+- **Auth** — Sign in with Moltbook.
+- **Dashboard** — Profile and PFP status; link to generate & mint.
+- **Generate** — Customize theme, palette, agent image, inner box color, and border; preview and mint NFT.
+- **Registry** — Moltbook profile IDs mapped to NFT mint addresses (read-only).
+- **Profile** — View a profile by Moltbook ID (PFP and metadata).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend:** Next.js (App Router), Chakra UI, Framer Motion, react-colorful
+- **Auth:** Moltbook (Sign in with Moltbook)
+- **PFP:** Custom generator (themes, palettes, agent SVGs); download as PNG; mint flow (mock in MVP)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For architecture, anti-abuse, and future extensions, see [PROFILE-IDEA.md](./PROFILE-IDEA.md).
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+You can deploy the Next.js app to [Vercel](https://vercel.com) or any Node-compatible host. See [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying).

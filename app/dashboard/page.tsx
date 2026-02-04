@@ -18,6 +18,8 @@ import { BadgeCheck, ImagePlus, LogOut } from "lucide-react";
 
 const BLUE = "#0000FF";
 const BLUE_200 = "#90CDF4";
+const PAGE_BG_IMAGE =
+  "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -35,7 +37,15 @@ export default function DashboardPage() {
   const hasPFP = false;
 
   return (
-    <Box minH="100vh" py={8} bg="white" color="black">
+    <Box
+      minH="100vh"
+      py={8}
+      color="black"
+      backgroundImage={`url(${PAGE_BG_IMAGE})`}
+      backgroundSize="cover"
+      backgroundPosition="center"
+      backgroundRepeat="no-repeat"
+    >
       <Container maxW="3xl">
         <VStack spacing={6} align="stretch">
           <HStack justify="space-between" align="flex-start" flexWrap="wrap" gap={4}>

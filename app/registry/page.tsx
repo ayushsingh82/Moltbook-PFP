@@ -22,6 +22,8 @@ import { ExternalLink } from "lucide-react";
 
 const BLUE = "#0000FF";
 const SHADOW_LIGHT_BLUE = "#ADD8E6";
+const PAGE_BG_IMAGE =
+  "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
 
 // Mock registry data. In production, fetch from API or chain.
 const MOCK_REGISTRY = [
@@ -39,7 +41,15 @@ function truncateAddress(addr: string, start = 6, end = 4) {
 
 export default function RegistryPage() {
   return (
-    <Box minH="100vh" py={8} bg="white" color="black">
+    <Box
+      minH="100vh"
+      py={8}
+      color="black"
+      backgroundImage={`url(${PAGE_BG_IMAGE})`}
+      backgroundSize="cover"
+      backgroundPosition="center"
+      backgroundRepeat="no-repeat"
+    >
       <Container maxW="5xl">
         <VStack spacing={8} align="stretch">
           <PageHeader
