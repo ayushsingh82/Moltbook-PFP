@@ -31,6 +31,7 @@ export function Navigation() {
   return (
     <Box
       as="nav"
+      fontFamily="serif"
       bg="bauhaus.box"
       borderBottom="4px solid"
       borderColor="bauhaus.black"
@@ -58,11 +59,9 @@ export function Navigation() {
               <Box
                 fontWeight="black"
                 fontSize="xl"
-                textTransform="uppercase"
-                letterSpacing="tight"
                 color="bauhaus.foreground"
               >
-                PROFILE
+                A2Base
               </Box>
             </HStack>
           </Link>
@@ -130,9 +129,8 @@ export function Navigation() {
               <Box
                 color="bauhaus.foreground"
                 fontWeight="black"
-                textTransform="uppercase"
               >
-                PROFILE
+                A2Base
               </Box>
             </HStack>
           </DrawerHeader>

@@ -11,7 +11,6 @@ import {
   useClipboard,
 } from "@chakra-ui/react";
 import { Copy, Check } from "lucide-react";
-import { LogoShapes } from "./ui/GeometricShape";
 import { TOKEN_ADDRESS } from "../constants";
 
 export function Footer() {
@@ -19,7 +18,7 @@ export function Footer() {
   const truncatedAddress = `${TOKEN_ADDRESS.slice(0, 6)}...${TOKEN_ADDRESS.slice(-4)}`;
 
   return (
-    <Box bg="bauhaus.background" color="bauhaus.foreground" py={{ base: 8, md: 16 }}>
+    <Box fontFamily="serif" bg="bauhaus.background" color="bauhaus.foreground" py={{ base: 8, md: 16 }}>
       <Container maxW="7xl">
         <VStack spacing={{ base: 6, md: 8 }}>
           <Flex
@@ -52,7 +51,7 @@ export function Footer() {
                   fontWeight="black"
                   fontSize="xl"
                 >
-                  Profile
+                  A2Base
                 </Text>
               </HStack>
               <Text
@@ -93,10 +92,11 @@ export function Footer() {
             gap={4}
           >
             <Text color="text.tertiary" fontSize="sm">
-              © {new Date().getFullYear()} Profile
+              © {new Date().getFullYear()} A2Base
             </Text>
-            <HStack spacing={2}>
-              <LogoShapes size="10px" />
+            <HStack spacing={1}>
+              <Box w="10px" h="10px" borderRadius="full" bg="bauhaus.orange" />
+              <Box w="10px" h="10px" bg="bauhaus.orange" transform="rotate(45deg)" />
             </HStack>
           </Flex>
         </VStack>

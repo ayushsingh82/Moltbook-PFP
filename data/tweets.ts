@@ -1,10 +1,15 @@
-export const tweets = [
-  "https://x.com/user/status/123456789",
-  "https://x.com/user/status/123456790",
-  "https://x.com/user/status/123456791",
+/**
+ * Tweet URLs for the homepage TweetGrid.
+ * getTweetId extracts the status id from a Twitter/X URL.
+ */
+
+export const tweets: string[] = [
+  "https://twitter.com/a2base/status/1",
+  "https://twitter.com/a2base/status/2",
+  "https://twitter.com/a2base/status/3",
 ];
 
-export function getTweetId(url: string): string {
-  const match = url.match(/status\/(\d+)/);
-  return match ? match[1] : url;
+export function getTweetId(tweetUrl: string): string {
+  const match = tweetUrl.match(/status\/(\d+)/);
+  return match ? match[1] : tweetUrl;
 }

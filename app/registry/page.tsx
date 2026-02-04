@@ -99,7 +99,6 @@ export default function RegistryPage() {
                   >
                     Profile Type
                   </Th>
-                  <Th w="40px" px={5} py={4} />
                 </Tr>
               </Thead>
               <Tbody>
@@ -137,32 +136,34 @@ export default function RegistryPage() {
                       px={5}
                       title={row.mintAddress}
                     >
-                      {truncateAddress(row.mintAddress, 10, 8)}
+                      <HStack spacing={2} display="inline-flex" align="center">
+                        <span>{truncateAddress(row.mintAddress, 10, 8)}</span>
+                        <ChakraLink
+                          as={Link}
+                          href={`/profile/${row.profileId}`}
+                          aria-label={`View ${row.profileId}`}
+                          color="bauhaus.orange"
+                          _hover={{ color: "bauhaus.orange", opacity: 0.8 }}
+                          display="inline-flex"
+                        >
+                          <ExternalLink size={14} />
+                        </ChakraLink>
+                      </HStack>
                     </Td>
                     <Td py={4} px={5} isNumeric>
                       <Badge
-                        colorScheme={row.profileType === "agent" ? "purple" : "blue"}
-                        bg={row.profileType === "agent" ? "purple.600" : "bauhaus.blue"}
-                        color="white"
+                        bg="bauhaus.smallBox"
+                        color={row.profileType === "agent" ? "white" : "bauhaus.smallBoxText"}
                         px={2}
                         py={1}
                         borderRadius="md"
                         fontSize="xs"
+                        fontWeight="bold"
                         textTransform="uppercase"
+                        letterSpacing="wider"
                       >
                         {row.profileType}
                       </Badge>
-                    </Td>
-                    <Td py={4} px={5}>
-                      <ChakraLink
-                        as={Link}
-                        href={`/profile/${row.profileId}`}
-                        aria-label={`View ${row.profileId}`}
-                        color="bauhaus.orange"
-                        _hover={{ color: "bauhaus.orange", opacity: 0.8 }}
-                      >
-                        <ExternalLink size={16} />
-                      </ChakraLink>
                     </Td>
                   </Tr>
                 ))}

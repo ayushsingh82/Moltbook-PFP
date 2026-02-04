@@ -17,7 +17,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       backgroundRepeat="no-repeat"
     >
       <Navigation />
-      {children}
+      <Box as="section" fontFamily="serif">
+        {children}
+      </Box>
     </Box>
   );
 }

@@ -40,13 +40,14 @@ export function Hero() {
             <Box position="relative" display="inline-block">
               <Heading
                 as="h1"
+                fontFamily="serif"
                 fontSize={{ base: "4xl", sm: "5xl", md: "6xl", lg: "8xl" }}
                 lineHeight="0.9"
                 letterSpacing="tighter"
               >
-                <Box as="span" color="bauhaus.black">YOUR MOLTBOOK</Box>
+                <Box as="span" color="bauhaus.black">Your Moltbot</Box>
                 <br />
-                <Box as="span" color="bauhaus.orange">PROFILE</Box>
+                <Box as="span" color="bauhaus.orange">Profile</Box>
                 <br />
                 <Box as="span" color="bauhaus.orange">ON CHAIN</Box>
               </Heading>

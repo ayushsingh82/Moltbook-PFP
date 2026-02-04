@@ -19,6 +19,9 @@ export const theme = extendTheme({
   colors: {
     bauhaus,
   },
+  fonts: {
+    serif: "var(--font-serif), Georgia, 'Times New Roman', serif",
+  },
   fontSizes: {
     "2xs": "0.625rem",
   },
