@@ -3,23 +3,28 @@
 import { Box, Container, Heading, VStack, SimpleGrid } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { usePathname } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { TweetCard } from "./ui/TweetCard";
 import { tweets, getTweetId } from "../data/tweets";
 
 const MotionBox = motion(Box);
+const BLUE = "#0000FF";
 
 const DECORATOR_COLORS = ["blue", "red", "yellow"] as const;
 const DECORATOR_SHAPES = ["circle", "square", "triangle"] as const;
 
 export function TweetGrid() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const headingRef = useRef(null);
   const isHeadingInView = useInView(headingRef, { once: true });
 
   return (
     <Box
       id="tweets"
-      bg="bauhaus.background"
+      bg={isHome ? "white" : "bauhaus.background"}
+      color={isHome ? "black" : undefined}
       pt={{ base: 18, md: 28 }}
       pb={{ base: 14, md: 20 }}
     >
@@ -36,7 +41,7 @@ export function TweetGrid() {
                   as="h2"
                   fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }}
                   textAlign="center"
-                  color="bauhaus.foreground"
+                  color={isHome ? BLUE : "bauhaus.foreground"}
                 >
                   WHAT PEOPLE ARE SAYING
                 </Heading>
@@ -57,7 +62,7 @@ export function TweetGrid() {
                     <path
                       d="M 0 18 Q 100 0 200 18"
                       fill="none"
-                      stroke="#F1F1F1"
+                      stroke={isHome ? BLUE : "#F1F1F1"}
                       strokeWidth="4"
                       strokeLinecap="round"
                     />
@@ -83,6 +88,7 @@ export function TweetGrid() {
                     DECORATOR_SHAPES[index % DECORATOR_SHAPES.length]
                   }
                   delay={0.1 * (index + 1)}
+                  useBlueBg={isHome}
                 />
               </Box>
             ))}

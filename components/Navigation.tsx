@@ -19,6 +19,8 @@ import {
 } from "@chakra-ui/react";
 import { Menu } from "lucide-react";
 
+const BLUE = "#0000FF";
+
 const navLinks = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Generate", href: "/generate" },
@@ -32,17 +34,17 @@ export function Navigation() {
     <Box
       as="nav"
       fontFamily="serif"
-      bg="bauhaus.box"
-      borderBottom="4px solid"
-      borderColor="bauhaus.black"
+      bg="white"
+      borderBottom="1px solid"
+      borderColor="black"
     >
       <Container maxW="7xl" py={4}>
         <Flex justify="space-between" align="center">
-          <Link href="/" _hover={{ textDecoration: "none" }} color="bauhaus.foreground">
+          <Link href="/" _hover={{ textDecoration: "none" }} color="black">
             <HStack spacing={3}>
               <Box
-                bg="bauhaus.orange"
-                color="bauhaus.black"
+                bg={BLUE}
+                color="white"
                 w="40px"
                 h="40px"
                 borderRadius="md"
@@ -50,7 +52,7 @@ export function Navigation() {
                 alignItems="center"
                 justifyContent="center"
                 border="2px solid"
-                borderColor="bauhaus.black"
+                borderColor="black"
                 fontWeight="black"
                 fontSize="xl"
               >
@@ -59,7 +61,7 @@ export function Navigation() {
               <Box
                 fontWeight="black"
                 fontSize="xl"
-                color="bauhaus.foreground"
+                color="black"
               >
                 A2Base
               </Box>
@@ -75,8 +77,8 @@ export function Navigation() {
                 textTransform="uppercase"
                 letterSpacing="wider"
                 fontSize="sm"
-                color="bauhaus.foreground"
-                _hover={{ color: "bauhaus.foreground", opacity: 0.7 }}
+                color="black"
+                _hover={{ color: "black", opacity: 0.7 }}
               >
                 {link.label}
               </Link>
@@ -85,11 +87,13 @@ export function Navigation() {
 
           <HStack spacing={4}>
             <Button
-              variant="primary"
+              bg={BLUE}
+              color="white"
               size="md"
               as="a"
               href="/auth"
               display={{ base: "none", md: "flex" }}
+              _hover={{ bg: "#0000CC", color: "white" }}
             >
               Connect
             </Button>
@@ -106,13 +110,13 @@ export function Navigation() {
 
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="full">
         <DrawerOverlay />
-        <DrawerContent bg="bauhaus.box">
-          <DrawerCloseButton color="bauhaus.foreground" size="lg" />
+        <DrawerContent bg="white">
+          <DrawerCloseButton color="black" size="lg" />
           <DrawerHeader>
             <HStack spacing={3}>
               <Box
-                bg="bauhaus.orange"
-                color="bauhaus.black"
+                bg={BLUE}
+                color="white"
                 w="40px"
                 h="40px"
                 borderRadius="md"
@@ -120,14 +124,14 @@ export function Navigation() {
                 alignItems="center"
                 justifyContent="center"
                 border="2px solid"
-                borderColor="bauhaus.black"
+                borderColor="black"
                 fontWeight="black"
                 fontSize="xl"
               >
                 P
               </Box>
               <Box
-                color="bauhaus.foreground"
+                color="black"
                 fontWeight="black"
               >
                 A2Base
@@ -140,24 +144,26 @@ export function Navigation() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  color="bauhaus.foreground"
+                  color="black"
                   fontWeight="bold"
                   fontSize="2xl"
                   textTransform="uppercase"
                   letterSpacing="wider"
                   onClick={onClose}
-                  _hover={{ color: "bauhaus.foreground", opacity: 0.7 }}
+                  _hover={{ color: "black", opacity: 0.7 }}
                 >
                   {link.label}
                 </Link>
               ))}
               <Button
-                variant="primary"
+                bg={BLUE}
+                color="white"
                 size="lg"
                 as="a"
                 href="/auth"
                 mt={4}
                 onClick={onClose}
+                _hover={{ bg: "#0000CC", color: "white" }}
               >
                 Connect
               </Button>

@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { usePathname } from "next/navigation";
 import {
   Shield,
   UserCircle,
@@ -22,6 +23,7 @@ import {
 import { Card } from "./ui/Card";
 
 const MotionBox = motion(Box);
+const BLUE = "#0000FF";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -30,6 +32,7 @@ interface FeatureCardProps {
   decoratorColor: "red" | "blue" | "yellow";
   decoratorShape: "circle" | "square" | "triangle";
   delay?: number;
+  variant?: "default" | "blue";
 }
 
 function FeatureCard({
@@ -39,9 +42,11 @@ function FeatureCard({
   decoratorColor,
   decoratorShape,
   delay = 0,
+  variant = "default",
 }: FeatureCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isBlue = variant === "blue";
 
   return (
     <MotionBox
@@ -55,21 +60,22 @@ function FeatureCard({
         decoratorColor={decoratorColor}
         decoratorShape={decoratorShape}
         h="full"
+        variant={variant}
       >
         <VStack align="flex-start" spacing={4} h="full">
           <Box
             p={3}
             border="3px solid"
-            borderColor="bauhaus.black"
-            bg="bauhaus.smallBox"
-            color="bauhaus.smallBoxText"
+            borderColor={isBlue ? "white" : "bauhaus.black"}
+            bg={isBlue ? "white" : "bauhaus.smallBox"}
+            color={isBlue ? BLUE : "bauhaus.smallBoxText"}
           >
             {icon}
           </Box>
-          <Heading as="h3" size="md" fontWeight="normal" color="bauhaus.foreground">
+          <Heading as="h3" size="md" fontWeight="normal" color={isBlue ? "white" : "bauhaus.foreground"}>
             {title}
           </Heading>
-          <Text color="text.secondary" fontWeight="medium">
+          <Text color={isBlue ? "whiteAlpha.900" : "text.secondary"} fontWeight="medium">
             {description}
           </Text>
         </VStack>
@@ -124,6 +130,8 @@ const features = [
 ];
 
 export function Features() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const headingRef = useRef(null);
   const isHeadingInView = useInView(headingRef, { once: true });
 
@@ -133,7 +141,8 @@ export function Features() {
       pt={{ base: 12, md: 20 }}
       pb={{ base: 20, md: 28 }}
       position="relative"
-      bg="bauhaus.background"
+      bg={isHome ? "white" : "bauhaus.background"}
+      color={isHome ? "black" : undefined}
     >
       <Container maxW="6xl">
         <VStack spacing={{ base: 14, md: 20 }}>
@@ -148,7 +157,7 @@ export function Features() {
                   as="h2"
                   fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
                   fontWeight="normal"
-                  color="bauhaus.foreground"
+                  color={isHome ? BLUE : "bauhaus.foreground"}
                   textAlign="center"
                 >
                   Features
@@ -170,7 +179,7 @@ export function Features() {
                     <path
                       d="M 0 18 Q 100 0 200 18"
                       fill="none"
-                      stroke="#F1F1F1"
+                      stroke={isHome ? BLUE : "#F1F1F1"}
                       strokeWidth="4"
                       strokeLinecap="round"
                     />
@@ -180,12 +189,13 @@ export function Features() {
             </MotionBox>
           </VStack>
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={{ base: 6, md: 8 }} w="full">
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={{ base: 6, md: 8 }} w="full" minChildHeight="280px">
             {features.map((feature, index) => (
               <FeatureCard
                 key={feature.title}
                 {...feature}
                 delay={index * 0.1}
+                variant={isHome ? "blue" : "default"}
               />
             ))}
           </SimpleGrid>

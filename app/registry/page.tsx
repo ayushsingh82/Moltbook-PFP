@@ -20,6 +20,9 @@ import Link from "next/link";
 import { PageHeader } from "../../components";
 import { ExternalLink } from "lucide-react";
 
+const BLUE = "#0000FF";
+const SHADOW_LIGHT_BLUE = "#ADD8E6";
+
 // Mock registry data. In production, fetch from API or chain.
 const MOCK_REGISTRY = [
   { profileId: "mb_abc123", mintAddress: "0x1234567890abcdef1234567890abcdef12345678", profileType: "human" },
@@ -36,37 +39,38 @@ function truncateAddress(addr: string, start = 6, end = 4) {
 
 export default function RegistryPage() {
   return (
-    <Box minH="100vh" py={8}>
+    <Box minH="100vh" py={8} bg="white" color="black">
       <Container maxW="5xl">
         <VStack spacing={8} align="stretch">
           <PageHeader
+            variant="blue"
             title="Registry"
             description="Moltbook profile IDs mapped to NFT mint addresses. Read-only. For transparency and debugging."
           />
 
           <HStack justify="space-between" align="center" flexWrap="wrap" gap={2}>
-            <Text color="bauhaus.orange" fontSize="sm" fontWeight="bold">
+            <Text color={BLUE} fontSize="sm" fontWeight="bold">
               {MOCK_REGISTRY.length} profile{MOCK_REGISTRY.length !== 1 ? "s" : ""} registered
             </Text>
           </HStack>
 
           <TableContainer
-            bg="bauhaus.box"
+            bg="white"
             border="3px solid"
-            borderColor="bauhaus.black"
+            borderColor={BLUE}
             borderRadius="xl"
             overflowX="auto"
-            boxShadow="6px 6px 0px 0px #121212"
+            boxShadow={`6px 6px 0px 0px ${SHADOW_LIGHT_BLUE}`}
           >
             <Table size="md" variant="unstyled">
               <Thead>
                 <Tr
-                  bg="bauhaus.smallBox"
+                  bg={BLUE}
                   borderBottom="3px solid"
-                  borderColor="bauhaus.black"
+                  borderColor={BLUE}
                 >
                   <Th
-                    color="bauhaus.smallBoxText"
+                    color="white"
                     fontWeight="bold"
                     textTransform="uppercase"
                     letterSpacing="wider"
@@ -77,7 +81,7 @@ export default function RegistryPage() {
                     Moltbook Profile ID
                   </Th>
                   <Th
-                    color="bauhaus.smallBoxText"
+                    color="white"
                     fontWeight="bold"
                     textTransform="uppercase"
                     letterSpacing="wider"
@@ -88,7 +92,7 @@ export default function RegistryPage() {
                     NFT Mint Address
                   </Th>
                   <Th
-                    color="bauhaus.smallBoxText"
+                    color="white"
                     fontWeight="bold"
                     textTransform="uppercase"
                     letterSpacing="wider"
@@ -106,13 +110,13 @@ export default function RegistryPage() {
                   <Tr
                     key={row.profileId}
                     borderBottom="1px solid"
-                    borderColor="whiteAlpha.100"
+                    borderColor="gray.200"
                     _last={{ borderBottom: "none" }}
-                    _hover={{ bg: "whiteAlpha.50" }}
+                    _hover={{ bg: "gray.50" }}
                     transition="background 0.15s"
                   >
                     <Td
-                      color="bauhaus.foreground"
+                      color="black"
                       fontFamily="mono"
                       fontSize="sm"
                       fontWeight="medium"
@@ -122,14 +126,14 @@ export default function RegistryPage() {
                       <ChakraLink
                         as={Link}
                         href={`/profile/${row.profileId}`}
-                        color="bauhaus.orange"
+                        color={BLUE}
                         _hover={{ textDecoration: "underline" }}
                       >
                         {row.profileId}
                       </ChakraLink>
                     </Td>
                     <Td
-                      color="bauhaus.foreground"
+                      color="black"
                       fontFamily="mono"
                       fontSize="xs"
                       py={4}
@@ -142,8 +146,8 @@ export default function RegistryPage() {
                           as={Link}
                           href={`/profile/${row.profileId}`}
                           aria-label={`View ${row.profileId}`}
-                          color="bauhaus.orange"
-                          _hover={{ color: "bauhaus.orange", opacity: 0.8 }}
+                          color={BLUE}
+                          _hover={{ color: BLUE, opacity: 0.8 }}
                           display="inline-flex"
                         >
                           <ExternalLink size={14} />
@@ -152,8 +156,8 @@ export default function RegistryPage() {
                     </Td>
                     <Td py={4} px={5} isNumeric>
                       <Badge
-                        bg="bauhaus.smallBox"
-                        color={row.profileType === "agent" ? "white" : "bauhaus.smallBoxText"}
+                        bg={BLUE}
+                        color="white"
                         px={2}
                         py={1}
                         borderRadius="md"

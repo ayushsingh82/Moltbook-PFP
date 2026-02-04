@@ -24,6 +24,9 @@ import { toPng } from "html-to-image";
 import { Download } from "lucide-react";
 import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
 
+const BLUE = "#0000FF";
+const BLUE_200 = "#90CDF4";
+
 const THEMES = ["Default", "Dark", "Light", "Ocean", "Sunset"] as const;
 const PALETTES = ["Orange & Black", "Blue & White", "Green & Gray", "Purple & Gold"] as const;
 
@@ -79,11 +82,11 @@ function AgentCard({
       maxW="100px"
       borderRadius="lg"
       border="2px solid"
-      borderColor={isSelected ? "bauhaus.orange" : "bauhaus.black"}
-      bg="bauhaus.background"
+      borderColor={isSelected ? BLUE : "gray.300"}
+      bg="white"
       overflow="hidden"
-      boxShadow="4px 4px 0 0 #121212"
-      _hover={{ borderColor: "bauhaus.orange" }}
+      boxShadow={`4px 4px 0 0 ${BLUE_200}`}
+      _hover={{ borderColor: BLUE }}
     >
       <Image
         src={src}
@@ -121,14 +124,14 @@ function PFPPreview({
       flexShrink={0}
       borderRadius="2xl"
       border="4px solid"
-      borderColor="bauhaus.black"
+      borderColor={BLUE}
       bg={colors.bg}
       backgroundImage={bgGradient}
       backgroundSize="cover"
       display="flex"
       alignItems="center"
       justifyContent="center"
-      boxShadow="6px 6px 0px 0px #121212"
+      boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
       overflow="hidden"
     >
       <Box
@@ -214,39 +217,40 @@ export default function GeneratePage() {
 
   if (mintState === "success") {
     return (
-      <Box minH="100vh" py={8}>
+      <Box minH="100vh" py={8} bg="white" color="black">
         <Container maxW="lg">
           <PageHeader
+            variant="blue"
             title="Minted successfully"
             description="Your identity PFP is now on chain. View your profile below."
           />
           <Box
-            bg="bauhaus.box"
+            bg="white"
             border="3px solid"
-            borderColor="bauhaus.black"
+            borderColor={BLUE}
             borderRadius="xl"
             overflow="hidden"
-            boxShadow="6px 6px 0px 0px #121212"
+            boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
             mt={6}
           >
             <VStack spacing={6} p={8}>
               <PFPPreview theme={theme} palette={palette} agentSrc={selectedAgent.src} size="160px" />
-              <Text color="bauhaus.foreground" fontWeight="bold">
+              <Text color="black" fontWeight="bold">
                 Your identity NFT is on chain
               </Text>
               <Box
                 w="full"
                 p={3}
-                bg="bauhaus.background"
+                bg="gray.50"
                 borderRadius="md"
                 border="2px solid"
-                borderColor="bauhaus.black"
+                borderColor={BLUE}
               >
-                <Text color="bauhaus.foreground" fontSize="xs" fontFamily="mono" wordBreak="break-all">
+                <Text color="black" fontSize="xs" fontFamily="mono" wordBreak="break-all">
                   {mintAddress}
                 </Text>
               </Box>
-              <Button as={Link} href={`/profile/${profile.profileId}`} variant="primary" size="lg" w="full">
+              <Button as={Link} href={`/profile/${profile.profileId}`} bg={BLUE} color="white" size="lg" w="full" _hover={{ bg: "#0000CC" }}>
                 View profile
               </Button>
             </VStack>
@@ -257,32 +261,32 @@ export default function GeneratePage() {
   }
 
   return (
-    <Box minH="100vh" py={8}>
+    <Box minH="100vh" py={8} bg="white" color="black">
       <Container maxW="5xl">
         <Box
-          bg="bauhaus.box"
+          bg="white"
           border="3px solid"
-          borderColor="bauhaus.black"
+          borderColor={BLUE}
           borderRadius="xl"
           overflow="hidden"
-          boxShadow="6px 6px 0px 0px #121212"
+          boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
         >
           <Box
-            bg="bauhaus.smallBox"
+            bg={BLUE}
             borderBottom="3px solid"
-            borderColor="bauhaus.black"
+            borderColor={BLUE}
             px={5}
             py={4}
           >
-            <Text color="bauhaus.smallBoxText" fontWeight="bold" fontSize="lg" textTransform="uppercase" letterSpacing="wider">
+            <Text color="white" fontWeight="bold" fontSize="lg" textTransform="uppercase" letterSpacing="wider">
               Generate & mint your identity PFP
             </Text>
           </Box>
 
           <Box
-            bg="bauhaus.smallBox"
+            bg={BLUE}
             borderBottom="3px solid"
-            borderColor="bauhaus.black"
+            borderColor={BLUE}
             px={5}
             py={3}
             textAlign="center"
@@ -302,18 +306,18 @@ export default function GeneratePage() {
               p={{ base: 5, md: 6 }}
               borderRight={isStacked ? "none" : "3px solid"}
               borderBottom={isStacked ? "3px solid" : "none"}
-              borderColor="bauhaus.black"
+              borderColor={BLUE}
             >
               <VStack align="stretch" spacing={5}>
                 <FormControl>
-                  <FormLabel color="bauhaus.foreground" fontSize="sm" fontWeight="bold">Theme</FormLabel>
+                  <FormLabel color="black" fontSize="sm" fontWeight="bold">Theme</FormLabel>
                   <Select
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
-                    bg="bauhaus.background"
+                    bg="white"
                     border="2px solid"
-                    borderColor="bauhaus.black"
-                    color="bauhaus.foreground"
+                    borderColor={BLUE}
+                    color="black"
                     size="md"
                   >
                     {THEMES.map((t) => (
@@ -322,14 +326,14 @@ export default function GeneratePage() {
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <FormLabel color="bauhaus.foreground" fontSize="sm" fontWeight="bold">Color palette</FormLabel>
+                  <FormLabel color="black" fontSize="sm" fontWeight="bold">Color palette</FormLabel>
                   <Select
                     value={palette}
                     onChange={(e) => setPalette(e.target.value)}
-                    bg="bauhaus.background"
+                    bg="white"
                     border="2px solid"
-                    borderColor="bauhaus.black"
-                    color="bauhaus.foreground"
+                    borderColor={BLUE}
+                    color="black"
                     size="md"
                   >
                     {PALETTES.map((p) => (
@@ -338,7 +342,7 @@ export default function GeneratePage() {
                   </Select>
                 </FormControl>
                 <Box>
-                  <FormLabel color="bauhaus.foreground" fontSize="sm" fontWeight="bold" mb={2}>Agent image</FormLabel>
+                  <FormLabel color="black" fontSize="sm" fontWeight="bold" mb={2}>Agent image</FormLabel>
                   <SimpleGrid columns={4} spacing={2}>
                     {AGENT_IMAGES.map((agent) => (
                       <AgentCard
@@ -355,9 +359,9 @@ export default function GeneratePage() {
                   variant="outline"
                   size="md"
                   onClick={handleRandomize}
-                  color="white"
-                  borderColor="white"
-                  _hover={{ color: "white", borderColor: "white", bg: "whiteAlpha.200" }}
+                  color={BLUE}
+                  borderColor={BLUE}
+                  _hover={{ bg: "blue.50", color: BLUE }}
                 >
                   Regenerate
                 </Button>
@@ -370,7 +374,7 @@ export default function GeneratePage() {
               flexDirection="column"
               alignItems="center"
               justifyContent="center"
-              bg="bauhaus.background"
+              bg="gray.50"
               minH={{ base: "320px", lg: "auto" }}
             >
               <VStack spacing={4}>
@@ -382,9 +386,9 @@ export default function GeneratePage() {
                   variant="outline"
                   leftIcon={<Download size={18} />}
                   onClick={handleDownload}
-                  color="bauhaus.foreground"
-                  borderColor="bauhaus.black"
-                  _hover={{ bg: "whiteAlpha.200" }}
+                  color={BLUE}
+                  borderColor={BLUE}
+                  _hover={{ bg: "blue.50" }}
                 >
                   Download
                 </Button>
@@ -392,7 +396,7 @@ export default function GeneratePage() {
             </Box>
           </Flex>
 
-          <Box bg="bauhaus.smallBox" borderBottom="3px solid" borderColor="bauhaus.black" px={5} py={3} textAlign="center">
+          <Box bg={BLUE} borderBottom="3px solid" borderColor={BLUE} px={5} py={3} textAlign="center">
             <Text color="white" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" fontSize="xs">
               Review & mint
             </Text>
@@ -404,29 +408,29 @@ export default function GeneratePage() {
               gap={6}
               p={6}
               borderBottom="3px solid"
-              borderColor="bauhaus.black"
+              borderColor={BLUE}
             >
               <Box flexShrink={0}>
-                <Text color="bauhaus.orange" fontSize="xs" fontWeight="bold" textTransform="uppercase" mb={2}>
+                <Text color={BLUE} fontSize="xs" fontWeight="bold" textTransform="uppercase" mb={2}>
                   Final PFP
                 </Text>
                 <PFPPreview theme={theme} palette={palette} agentSrc={selectedAgent.src} size="160px" />
               </Box>
               <Box flex={1} minW={0}>
-                <Text color="bauhaus.orange" fontSize="xs" fontWeight="bold" textTransform="uppercase" mb={2}>
+                <Text color={BLUE} fontSize="xs" fontWeight="bold" textTransform="uppercase" mb={2}>
                   Metadata (on-chain)
                 </Text>
                 <Box
                   as="pre"
                   fontSize="xs"
                   fontFamily="mono"
-                  color="bauhaus.foreground"
+                  color="black"
                   whiteSpace="pre-wrap"
                   p={4}
-                  bg="bauhaus.background"
+                  bg="gray.50"
                   borderRadius="md"
                   border="2px solid"
-                  borderColor="bauhaus.black"
+                  borderColor={BLUE}
                 >
                   {JSON.stringify(
                     {
@@ -448,13 +452,15 @@ export default function GeneratePage() {
             )}
             <Box p={6}>
               <Button
-                variant="primary"
+                bg={BLUE}
+                color="white"
                 size="lg"
                 w="full"
                 onClick={handleMint}
                 isLoading={mintState === "loading"}
                 loadingText="Minting…"
                 leftIcon={mintState === "loading" ? <Spinner size="sm" /> : undefined}
+                _hover={{ bg: "#0000CC" }}
               >
                 Mint NFT
               </Button>

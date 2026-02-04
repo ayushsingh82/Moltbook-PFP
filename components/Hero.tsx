@@ -5,26 +5,30 @@ import {
   Container,
   Heading,
   Text,
-  Button,
-  HStack,
   VStack,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
-const HERO_BG_IMAGE =
+// Same background image as TokenSection (sky/cloud)
+const HEADER_BG_IMAGE =
   "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
 
 export function Hero() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
   return (
     <Box
       position="relative"
       overflow="hidden"
       py={{ base: 14, md: 22, lg: 32 }}
       px={{ base: 5, md: 10, lg: 14 }}
-      backgroundImage={`url(${HERO_BG_IMAGE})`}
+      backgroundImage={`url(${HEADER_BG_IMAGE})`}
       backgroundSize="cover"
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
+      color={isHome ? "white" : undefined}
     >
       <Container maxW="4xl">
         <VStack
@@ -45,11 +49,15 @@ export function Hero() {
                 lineHeight="0.9"
                 letterSpacing="tighter"
               >
-                <Box as="span" color="bauhaus.black">Your Moltbot</Box>
+                <Box as="span" color="black">Your Moltbot</Box>
                 <br />
-                <Box as="span" color="bauhaus.orange">Profile</Box>
+                <Box as="span" color="#0000FF">
+                  Profile
+                </Box>
                 <br />
-                <Box as="span" color="bauhaus.orange">ON CHAIN</Box>
+                <Box as="span" color="#0000FF">
+                  ON CHAIN
+                </Box>
               </Heading>
               <Box
                 position="absolute"
@@ -68,7 +76,7 @@ export function Hero() {
                   <path
                     d="M 0 18 Q 100 0 200 18"
                     fill="none"
-                    stroke="#121212"
+                    stroke={isHome ? "#0000FF" : "#121212"}
                     strokeWidth="4"
                     strokeLinecap="round"
                   />
@@ -84,7 +92,7 @@ export function Hero() {
           >
             <Text
               fontSize={{ base: "lg", md: "xl" }}
-              color="bauhaus.black"
+              color="black"
               maxW="xl"
               fontWeight="medium"
             >
@@ -95,40 +103,21 @@ export function Hero() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <HStack
-              spacing={4}
-              pt={4}
-              flexWrap="wrap"
-              justify="center"
-            >
-              <Button
-                variant="primary"
-                size={{ base: "md", md: "lg" }}
-                as="a"
-                href="#install"
-              >
-                Connect
-              </Button>
-            </HStack>
-          </motion.div>
-
-          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             <Text
+              as="a"
+              href="/auth"
+              color="black"
               fontSize="xs"
-              color="bauhaus.black"
               fontWeight="bold"
               textTransform="uppercase"
               letterSpacing="wider"
+              _hover={{ textDecoration: "underline" }}
             >
-              Sign in with Moltbook · Mint your PFP
+              Sign in with Moltbook · Mint your PFP here
             </Text>
           </motion.div>
         </VStack>

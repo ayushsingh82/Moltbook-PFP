@@ -2,16 +2,20 @@
 
 import { Box, Heading, Text, VStack } from "@chakra-ui/react";
 
+const BLUE = "#0000FF";
+
 interface PageHeaderProps {
   title: string;
   description: string;
+  variant?: "default" | "blue";
 }
 
-export function PageHeader({ title, description }: PageHeaderProps) {
+export function PageHeader({ title, description, variant = "default" }: PageHeaderProps) {
+  const useBlue = variant === "blue";
   return (
     <VStack align="flex-start" spacing={3} w="full">
       <Box position="relative" display="inline-block">
-        <Heading size="lg" color="bauhaus.black">
+        <Heading size="lg" color={useBlue ? "black" : "bauhaus.black"}>
           {title}
         </Heading>
         <Box
@@ -30,14 +34,14 @@ export function PageHeader({ title, description }: PageHeaderProps) {
             <path
               d="M 0 18 Q 100 0 200 18"
               fill="none"
-              stroke="#F97316"
+              stroke={useBlue ? BLUE : "#F97316"}
               strokeWidth="3"
               strokeLinecap="round"
             />
           </svg>
         </Box>
       </Box>
-      <Text color="bauhaus.black" fontSize="sm" maxW="xl">
+      <Text color={useBlue ? "black" : "bauhaus.black"} fontSize="sm" maxW="xl">
         {description}
       </Text>
     </VStack>

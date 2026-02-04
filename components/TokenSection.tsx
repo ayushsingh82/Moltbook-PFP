@@ -37,8 +37,8 @@ export function TokenSection() {
       py={{ base: 16, md: 24 }}
       position="relative"
       overflow="hidden"
-      borderTop="6px solid"
-      borderColor="bauhaus.border"
+      borderTop="1px solid"
+      borderColor="black"
       backgroundImage={`url(${SECTION_BG_IMAGE})`}
       backgroundSize="cover"
       backgroundPosition="center"

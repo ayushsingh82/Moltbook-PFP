@@ -76,17 +76,19 @@ export function TokenBanner() {
     }
   }, [tokenData?.marketCap, tokenData?.marketCapRaw]);
 
+  const BLUE_BG = "#0000FF";
+
   return (
     <Box position="sticky" top={0} zIndex={100}>
       <HStack
-        bg="bauhaus.box"
-        color="bauhaus.foreground"
+        bg={BLUE_BG}
+        color="white"
         py={3}
         px={{ base: 4, md: 8 }}
         justify="center"
         spacing={{ base: 3, md: 6 }}
         borderBottom="3px solid"
-        borderColor="bauhaus.black"
+        borderColor="white"
         flexWrap="wrap"
         rowGap={3}
       >
@@ -94,15 +96,15 @@ export function TokenBanner() {
           <Text
             fontSize="xs"
             fontWeight="700"
-            color="bauhaus.foreground"
+            color="white"
             textTransform="uppercase"
             letterSpacing="wider"
           >
             Powered by
           </Text>
           <Box
-            bg="bauhaus.smallBox"
-            color="bauhaus.smallBoxText"
+            bg="white"
+            color={BLUE_BG}
             px={3}
             py={1.5}
             fontWeight="900"
@@ -110,8 +112,8 @@ export function TokenBanner() {
             textTransform="uppercase"
             letterSpacing="wide"
             border="2px solid"
-            borderColor="bauhaus.black"
-            boxShadow="3px 3px 0px 0px #121212"
+            borderColor="white"
+            boxShadow="3px 3px 0px 0px rgba(0,0,0,0.2)"
           >
             $NUI
           </Box>
@@ -119,14 +121,14 @@ export function TokenBanner() {
 
         <HStack
           spacing={1}
-          bg="bauhaus.smallBox"
-          color="bauhaus.smallBoxText"
+          bg="white"
+          color={BLUE_BG}
           border="2px solid"
-          borderColor={isAnimating ? "bauhaus.green" : "bauhaus.black"}
+          borderColor={isAnimating ? "bauhaus.green" : "white"}
           boxShadow={
             isAnimating
               ? "3px 3px 0px 0px #208040"
-              : "3px 3px 0px 0px #121212"
+              : "3px 3px 0px 0px rgba(0,0,0,0.2)"
           }
           px={4}
           py={1.5}
@@ -135,7 +137,7 @@ export function TokenBanner() {
           <Text
             fontSize="xs"
             fontWeight="700"
-            color="bauhaus.smallBoxText"
+            color={BLUE_BG}
             textTransform="uppercase"
             letterSpacing="wider"
           >
@@ -157,7 +159,7 @@ export function TokenBanner() {
                   key={displayValue}
                   fontSize="sm"
                   fontWeight="black"
-                  color={isAnimating ? "bauhaus.green" : "bauhaus.smallBoxText"}
+                  color={isAnimating ? "bauhaus.green" : BLUE_BG}
                   position="absolute"
                   whiteSpace="nowrap"
                   initial={{

@@ -13,12 +13,14 @@ import {
 import { Copy, Check } from "lucide-react";
 import { TOKEN_ADDRESS } from "../constants";
 
+const BLUE = "#0000FF";
+
 export function Footer() {
   const { hasCopied, onCopy } = useClipboard(TOKEN_ADDRESS);
   const truncatedAddress = `${TOKEN_ADDRESS.slice(0, 6)}...${TOKEN_ADDRESS.slice(-4)}`;
 
   return (
-    <Box fontFamily="serif" bg="bauhaus.background" color="bauhaus.foreground" py={{ base: 8, md: 16 }}>
+    <Box fontFamily="serif" bg={BLUE} color="white" py={{ base: 8, md: 16 }}>
       <Container maxW="7xl">
         <VStack spacing={{ base: 6, md: 8 }}>
           <Flex
@@ -31,8 +33,8 @@ export function Footer() {
             <VStack align={{ base: "center", md: "flex-start" }} spacing={3}>
               <HStack spacing={3}>
                 <Box
-                  bg="bauhaus.orange"
-                  color="bauhaus.black"
+                  bg="white"
+                  color={BLUE}
                   w="40px"
                   h="40px"
                   borderRadius="md"
@@ -40,14 +42,14 @@ export function Footer() {
                   alignItems="center"
                   justifyContent="center"
                   border="2px solid"
-                  borderColor="bauhaus.black"
+                  borderColor="white"
                   fontWeight="black"
                   fontSize="xl"
                 >
                   P
                 </Box>
                 <Text
-                  color="bauhaus.foreground"
+                  color="white"
                   fontWeight="black"
                   fontSize="xl"
                 >
@@ -55,7 +57,7 @@ export function Footer() {
                 </Text>
               </HStack>
               <Text
-                color="text.secondary"
+                color="whiteAlpha.900"
                 maxW="300px"
                 fontSize="sm"
                 textAlign={{ base: "center", md: "left" }}
@@ -63,10 +65,10 @@ export function Footer() {
                 Verified Moltbook identity PFPs, on chain.
               </Text>
               <HStack>
-                <Text color="text.tertiary" fontSize="xs">
+                <Text color="whiteAlpha.800" fontSize="xs">
                   Contract:
                 </Text>
-                <Text color="text.secondary" fontFamily="mono" fontSize="xs">
+                <Text color="whiteAlpha.900" fontFamily="mono" fontSize="xs">
                   {truncatedAddress}
                 </Text>
                 <IconButton
@@ -74,15 +76,15 @@ export function Footer() {
                   icon={hasCopied ? <Check size={14} /> : <Copy size={14} />}
                   size="xs"
                   variant="ghost"
-                  color="text.secondary"
+                  color="whiteAlpha.900"
                   onClick={onCopy}
-                  _hover={{ color: "bauhaus.foreground", bg: "whiteAlpha.200" }}
+                  _hover={{ color: "white", bg: "whiteAlpha.200" }}
                 />
               </HStack>
             </VStack>
           </Flex>
 
-          <Box w="full" h="2px" bg="bauhaus.box" />
+          <Box w="full" h="2px" bg="whiteAlpha.300" />
 
           <Flex
             direction="row"
@@ -91,12 +93,12 @@ export function Footer() {
             w="full"
             gap={4}
           >
-            <Text color="text.tertiary" fontSize="sm">
+            <Text color="whiteAlpha.800" fontSize="sm">
               © {new Date().getFullYear()} A2Base
             </Text>
             <HStack spacing={1}>
-              <Box w="10px" h="10px" borderRadius="full" bg="bauhaus.orange" />
-              <Box w="10px" h="10px" bg="bauhaus.orange" transform="rotate(45deg)" />
+              <Box w="10px" h="10px" borderRadius="full" bg="white" />
+              <Box w="10px" h="10px" bg="white" transform="rotate(45deg)" />
             </HStack>
           </Flex>
         </VStack>

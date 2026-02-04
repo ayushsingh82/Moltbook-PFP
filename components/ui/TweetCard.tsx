@@ -8,11 +8,16 @@ import { GeometricShape } from "./GeometricShape";
 type DecoratorColor = "red" | "blue" | "yellow";
 type DecoratorShape = "circle" | "square" | "triangle";
 
+const BLUE = "#0000FF";
+// Chakra default blue.200
+const BLUE_200 = "#90CDF4";
+
 interface TweetCardProps {
   tweetId: string;
   decoratorColor: DecoratorColor;
   decoratorShape: DecoratorShape;
   delay?: number;
+  useBlueBg?: boolean;
 }
 
 const MotionBox = motion(Box);
@@ -22,6 +27,7 @@ export function TweetCard({
   decoratorColor,
   decoratorShape,
   delay = 0,
+  useBlueBg = false,
 }: TweetCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-20px" });
@@ -35,17 +41,17 @@ export function TweetCard({
     >
       <Box
         display="block"
-        bg="bauhaus.box"
-        color="bauhaus.foreground"
+        bg={useBlueBg ? BLUE : "bauhaus.box"}
+        color={useBlueBg ? "white" : "bauhaus.foreground"}
         border="3px solid"
-        borderColor="bauhaus.black"
+        borderColor={useBlueBg ? "white" : "bauhaus.black"}
         borderRadius="lg"
-        boxShadow="5px 5px 0px 0px #121212"
+        boxShadow={`5px 5px 0px 0px ${BLUE_200}`}
         p={5}
         position="relative"
         _hover={{
           transform: "translateY(-3px)",
-          boxShadow: "7px 7px 0px 0px #121212",
+          boxShadow: `7px 7px 0px 0px ${BLUE_200}`,
         }}
         transition="all 0.2s ease-out"
       >
