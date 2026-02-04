@@ -3,12 +3,12 @@
 import { Box, Container, Text, Spinner, VStack } from "@chakra-ui/react";
 import { PageHeader } from "../../components";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
 
 type AuthState = "loading" | "success" | "error";
 
-export default function AuthPage() {
+function AuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setProfile } = useMoltbookAuth();
@@ -68,5 +68,28 @@ export default function AuthPage() {
         </VStack>
       </Container>
     </Box>
+  );
+}
+
+function AuthFallback() {
+  return (
+    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Container maxW="md">
+        <VStack spacing={6}>
+          <Spinner size="xl" color="bauhaus.orange" thickness="3px" />
+          <Text color="bauhaus.black" fontSize="lg">
+            Loading…
+          </Text>
+        </VStack>
+      </Container>
+    </Box>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<AuthFallback />}>
+      <AuthContent />
+    </Suspense>
   );
 }

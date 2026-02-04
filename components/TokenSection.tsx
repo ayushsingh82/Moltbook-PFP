@@ -59,7 +59,7 @@ export function TokenSection() {
                 color="bauhaus.foreground"
                 textAlign="center"
               >
-                $NUI
+                $A2B
               </Heading>
             </MotionBox>
             <Box w="100px" h="4px" bg="bauhaus.foreground" mx="auto" />

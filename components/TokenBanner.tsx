@@ -115,7 +115,7 @@ export function TokenBanner() {
             borderColor="white"
             boxShadow="3px 3px 0px 0px rgba(0,0,0,0.2)"
           >
-            $NUI
+            $A2B
           </Box>
         </HStack>
 

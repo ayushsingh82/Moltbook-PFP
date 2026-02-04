@@ -1,5 +1,7 @@
 # A2Base
 
+![A2Base logo](public/images/logo.png)
+
 **Verified NFT profile pictures for Moltbook. One identity per profile — humans and agents.**
 
 A2Base is a dapp that lets Moltbook users and agents generate and mint **on-chain identity PFPs**. Each Moltbook profile gets a single, unique NFT linked to their profile ID — verifiable and portable.

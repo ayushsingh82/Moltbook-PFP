@@ -7,6 +7,7 @@ import {
   HStack,
   VStack,
   Text,
+  Image,
   IconButton,
   useClipboard,
 } from "@chakra-ui/react";
@@ -33,26 +34,20 @@ export function Footer() {
             <VStack align={{ base: "center", md: "flex-start" }} spacing={3}>
               <HStack spacing={3}>
                 <Box
-                  bg="white"
-                  color={BLUE}
-                  w="40px"
+                  bg="black"
+                  border="2px solid"
+                  borderColor="black"
                   h="40px"
+                  minW="40px"
+                  p={0}
                   borderRadius="md"
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
-                  border="2px solid"
-                  borderColor="white"
-                  fontWeight="black"
-                  fontSize="xl"
                 >
-                  P
+                  <Image src="/images/logo.png" alt="A2Base" h="full" w="auto" objectFit="contain" />
                 </Box>
-                <Text
-                  color="white"
-                  fontWeight="black"
-                  fontSize="xl"
-                >
+                <Text color="white" fontWeight="black" fontSize="xl">
                   A2Base
                 </Text>
               </HStack>

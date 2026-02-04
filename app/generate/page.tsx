@@ -14,11 +14,6 @@ import {
   useToast,
   Image,
   SimpleGrid,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  HStack,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { PageHeader } from "../../components";
@@ -33,52 +28,6 @@ const BLUE = "#0000FF";
 const BLUE_200 = "#90CDF4";
 const PAGE_BG_IMAGE =
   "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
-
-const THEMES = ["Default", "Dark", "Light", "Ocean", "Sunset", "Forest", "Midnight", "Rose", "Sand", "Lavender"] as const;
-const PALETTES = [
-  "Orange & Black",
-  "Blue & White",
-  "Green & Gray",
-  "Purple & Gold",
-  "Coral & Cream",
-  "Mint & Navy",
-  "Rose & Gold",
-  "Slate & Cyan",
-  "Amber & Brown",
-  "Teal & White",
-  "Indigo & Pink",
-  "Red & Black",
-  "Custom",
-] as const;
-
-const PALETTE_COLORS: Record<string, { bg: string; accent: string }> = {
-  "Orange & Black": { bg: "#121212", accent: "#F97316" },
-  "Blue & White": { bg: "#1a365d", accent: "#ffffff" },
-  "Green & Gray": { bg: "#1a2f1a", accent: "#48BB78" },
-  "Purple & Gold": { bg: "#2d1b4e", accent: "#D69E2E" },
-  "Coral & Cream": { bg: "#2d1a1a", accent: "#FF7F50" },
-  "Mint & Navy": { bg: "#0f3460", accent: "#98D8C8" },
-  "Rose & Gold": { bg: "#3d2c2c", accent: "#E8B4B8" },
-  "Slate & Cyan": { bg: "#1e293b", accent: "#22D3EE" },
-  "Amber & Brown": { bg: "#29221a", accent: "#FBBF24" },
-  "Teal & White": { bg: "#134e4a", accent: "#f0fdfa" },
-  "Indigo & Pink": { bg: "#312e81", accent: "#F472B6" },
-  "Red & Black": { bg: "#1c1917", accent: "#EF4444" },
-  Custom: { bg: "#121212", accent: "#F97316" }, // fallback; overridden by state
-};
-
-const THEME_BG: Record<string, string> = {
-  Default: "linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%)",
-  Dark: "linear-gradient(145deg, #0d0d0d 0%, #1a1a1a 100%)",
-  Light: "linear-gradient(145deg, #2d2d2d 0%, #4a4a4a 100%)",
-  Ocean: "linear-gradient(145deg, #0c2d48 0%, #1a4d6e 100%)",
-  Sunset: "linear-gradient(145deg, #4a1c1c 0%, #6b2d2d 100%)",
-  Forest: "linear-gradient(145deg, #0d2818 0%, #1a3d2e 100%)",
-  Midnight: "linear-gradient(145deg, #0f0a1a 0%, #1e1b4b 100%)",
-  Rose: "linear-gradient(145deg, #3d2c2c 0%, #5c3d3d 100%)",
-  Sand: "linear-gradient(145deg, #3d352a 0%, #5c5244 100%)",
-  Lavender: "linear-gradient(145deg, #2e2a4a 0%, #4a4560 100%)",
-};
 
 // All agent images from public/images/ (hero-image01–10)
 const AGENT_IMAGES = [
@@ -136,29 +85,21 @@ function AgentCard({
 }
 
 function PFPPreview({
-  theme,
-  palette,
   agentSrc,
   size = "260px",
-  customColors,
   innerBoxBg,
   innerBoxBorder,
 }: {
-  theme: string;
-  palette: string;
   agentSrc: string;
   size?: string;
-  customColors?: { bg: string; accent: string };
   innerBoxBg?: string;
   innerBoxBorder?: string;
 }) {
-  const colors = customColors ?? PALETTE_COLORS[palette] ?? PALETTE_COLORS["Orange & Black"];
-  const bgGradient = THEME_BG[theme] ?? THEME_BG["Default"];
   const resolvedSize = useBreakpointValue(
     size === "260px" ? { base: "180px", sm: "220px", md: "260px", lg: "280px" } : { base: "120px", md: "160px" }
   ) ?? (size === "260px" ? "260px" : "160px");
   const innerBg = innerBoxBg ?? "#171717";
-  const innerBorder = innerBoxBorder ?? colors.accent;
+  const innerBorder = innerBoxBorder ?? "#ffffff";
 
   return (
     <Box
@@ -187,21 +128,12 @@ export default function GeneratePage() {
   const router = useRouter();
   const toast = useToast();
   const { profile, isLoading } = useMoltbookAuth();
-  const [theme, setTheme] = useState<string>(THEMES[0]);
-  const [palette, setPalette] = useState<string>(PALETTES[0]);
-  const [customBg, setCustomBg] = useState("#121212");
-  const [customAccent, setCustomAccent] = useState("#F97316");
   const [innerBoxBg, setInnerBoxBg] = useState("#171717");
   const [innerBoxBorder, setInnerBoxBorder] = useState("#ffffff");
   const [selectedAgent, setSelectedAgent] = useState<(typeof AGENT_IMAGES)[number]>(AGENT_IMAGES[0]);
   const [mintState, setMintState] = useState<MintState>("idle");
   const [mintAddress, setMintAddress] = useState<string>("");
   const previewRef = useRef<HTMLDivElement>(null);
-
-  const effectivePaletteColors =
-    palette === "Custom"
-      ? { bg: customBg, accent: customAccent }
-      : (PALETTE_COLORS[palette] ?? PALETTE_COLORS["Orange & Black"]);
 
   useEffect(() => {
     if (!isLoading && !profile) router.replace("/auth");
@@ -213,9 +145,6 @@ export default function GeneratePage() {
   if (!profile) return null;
 
   const handleRandomize = () => {
-    setTheme(THEMES[Math.floor(Math.random() * THEMES.length)]);
-    const presets = PALETTES.filter((p) => p !== "Custom");
-    setPalette(presets[Math.floor(Math.random() * presets.length)]);
     setSelectedAgent(AGENT_IMAGES[Math.floor(Math.random() * AGENT_IMAGES.length)]);
   };
 
@@ -280,11 +209,8 @@ export default function GeneratePage() {
           >
             <VStack spacing={6} p={8}>
               <PFPPreview
-                theme={theme}
-                palette={palette}
                 agentSrc={selectedAgent.src}
                 size="160px"
-                customColors={palette === "Custom" ? { bg: customBg, accent: customAccent } : undefined}
                 innerBoxBg={innerBoxBg}
                 innerBoxBorder={innerBoxBorder}
               />
@@ -371,76 +297,6 @@ export default function GeneratePage() {
             >
               <VStack align="stretch" spacing={5}>
                 <FormControl>
-                  <FormLabel color="black" fontSize="sm" fontWeight="bold">Theme — drag to select</FormLabel>
-                  <Slider
-                    aria-label="Theme"
-                    value={Math.max(0, THEMES.indexOf(theme))}
-                    min={0}
-                    max={THEMES.length - 1}
-                    step={1}
-                    onChange={(v) => setTheme(THEMES[v])}
-                  >
-                    <SliderTrack bg="gray.200">
-                      <SliderFilledTrack bg={BLUE} />
-                    </SliderTrack>
-                    <SliderThumb boxSize={5} border="2px solid" borderColor={BLUE} bg="white" />
-                  </Slider>
-                  <Text color="gray.600" fontSize="xs" mt={1}>
-                    {theme}
-                  </Text>
-                </FormControl>
-                <FormControl>
-                  <FormLabel color="black" fontSize="sm" fontWeight="bold">Color palette — drag to select</FormLabel>
-                  <Slider
-                    aria-label="Color palette"
-                    value={Math.max(0, PALETTES.indexOf(palette))}
-                    min={0}
-                    max={PALETTES.length - 1}
-                    step={1}
-                    onChange={(v) => setPalette(PALETTES[v])}
-                  >
-                    <SliderTrack bg="gray.200">
-                      <SliderFilledTrack bg={BLUE} />
-                    </SliderTrack>
-                    <SliderThumb boxSize={5} border="2px solid" borderColor={BLUE} bg="white" />
-                  </Slider>
-                  <HStack mt={2} spacing={1}>
-                    <Box
-                      w="24px"
-                      h="24px"
-                      borderRadius="md"
-                      bg={effectivePaletteColors.bg}
-                      border="1px solid"
-                      borderColor="gray.300"
-                    />
-                    <Box
-                      w="24px"
-                      h="24px"
-                      borderRadius="md"
-                      bg={effectivePaletteColors.accent}
-                      border="1px solid"
-                      borderColor="gray.300"
-                    />
-                    <Text color="gray.600" fontSize="xs" ml={1}>
-                      {palette}
-                    </Text>
-                  </HStack>
-                  {palette === "Custom" && (
-                    <VStack align="stretch" mt={3} spacing={3} p={3} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
-                      <Box>
-                        <Text fontSize="xs" fontWeight="bold" color="black" mb={2}>Background</Text>
-                        <HexColorPicker color={customBg} onChange={setCustomBg} style={{ width: "100%", height: "120px" }} />
-                        <Text fontFamily="mono" fontSize="xs" color="gray.600" mt={1}>{customBg}</Text>
-                      </Box>
-                      <Box>
-                        <Text fontSize="xs" fontWeight="bold" color="black" mb={2}>Accent / border</Text>
-                        <HexColorPicker color={customAccent} onChange={setCustomAccent} style={{ width: "100%", height: "120px" }} />
-                        <Text fontFamily="mono" fontSize="xs" color="gray.600" mt={1}>{customAccent}</Text>
-                      </Box>
-                    </VStack>
-                  )}
-                </FormControl>
-                <FormControl>
                   <FormLabel color="black" fontSize="sm" fontWeight="bold">Inner box color (behind agent)</FormLabel>
                   <Box p={2} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
                     <HexColorPicker color={innerBoxBg} onChange={setInnerBoxBg} style={{ width: "100%", height: "100px" }} />
@@ -493,10 +349,7 @@ export default function GeneratePage() {
               <VStack spacing={4}>
                 <Box ref={previewRef} display="inline-block">
                   <PFPPreview
-                    theme={theme}
-                    palette={palette}
                     agentSrc={selectedAgent.src}
-                    customColors={palette === "Custom" ? { bg: customBg, accent: customAccent } : undefined}
                     innerBoxBg={innerBoxBg}
                     innerBoxBorder={innerBoxBorder}
                   />
@@ -535,11 +388,8 @@ export default function GeneratePage() {
                   Final PFP
                 </Text>
                 <PFPPreview
-                  theme={theme}
-                  palette={palette}
                   agentSrc={selectedAgent.src}
                   size="160px"
-                  customColors={palette === "Custom" ? { bg: customBg, accent: customAccent } : undefined}
                   innerBoxBg={innerBoxBg}
                   innerBoxBorder={innerBoxBorder}
                 />

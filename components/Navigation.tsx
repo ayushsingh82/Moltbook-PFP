@@ -8,6 +8,7 @@ import {
   Link,
   Button,
   IconButton,
+  Image,
   Drawer,
   DrawerBody,
   DrawerHeader,
@@ -43,26 +44,20 @@ export function Navigation() {
           <Link href="/" _hover={{ textDecoration: "none" }} color="black">
             <HStack spacing={3}>
               <Box
-                bg={BLUE}
-                color="white"
-                w="40px"
+                bg="black"
+                border="2px solid"
+                borderColor="black"
                 h="40px"
+                minW="40px"
+                p={0}
                 borderRadius="md"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                border="2px solid"
-                borderColor="black"
-                fontWeight="black"
-                fontSize="xl"
               >
-                P
+                <Image src="/images/logo.png" alt="A2Base" h="full" w="auto" objectFit="contain" />
               </Box>
-              <Box
-                fontWeight="black"
-                fontSize="xl"
-                color="black"
-              >
+              <Box fontWeight="black" fontSize="xl" color="black">
                 A2Base
               </Box>
             </HStack>
@@ -115,25 +110,20 @@ export function Navigation() {
           <DrawerHeader>
             <HStack spacing={3}>
               <Box
-                bg={BLUE}
-                color="white"
-                w="40px"
+                bg="black"
+                border="2px solid"
+                borderColor="black"
                 h="40px"
+                minW="40px"
+                p={0}
                 borderRadius="md"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                border="2px solid"
-                borderColor="black"
-                fontWeight="black"
-                fontSize="xl"
               >
-                P
+                <Image src="/images/logo.png" alt="A2Base" h="full" w="auto" objectFit="contain" />
               </Box>
-              <Box
-                color="black"
-                fontWeight="black"
-              >
+              <Box color="black" fontWeight="black">
                 A2Base
               </Box>
             </HStack>

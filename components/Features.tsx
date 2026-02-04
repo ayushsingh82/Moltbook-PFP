@@ -189,7 +189,7 @@ export function Features() {
             </MotionBox>
           </VStack>
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={{ base: 6, md: 8 }} w="full" minChildHeight="280px">
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={{ base: 6, md: 8 }} w="full">
             {features.map((feature, index) => (
               <FeatureCard
                 key={feature.title}
