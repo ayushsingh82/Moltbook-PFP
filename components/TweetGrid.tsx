@@ -57,7 +57,7 @@ export function TweetGrid() {
                     <path
                       d="M 0 18 Q 100 0 200 18"
                       fill="none"
-                      stroke="#121212"
+                      stroke="#F1F1F1"
                       strokeWidth="4"
                       strokeLinecap="round"
                     />
