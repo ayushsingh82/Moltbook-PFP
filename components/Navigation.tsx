@@ -20,8 +20,9 @@ import {
 import { Menu } from "lucide-react";
 
 const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "Token", href: "#token" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Generate", href: "/generate" },
+  { label: "Registry", href: "/registry" },
 ];
 
 export function Navigation() {
@@ -88,10 +89,10 @@ export function Navigation() {
               variant="primary"
               size="md"
               as="a"
-              href="#install"
+              href="/auth"
               display={{ base: "none", md: "flex" }}
             >
-              Connect Wallet
+              Connect
             </Button>
             <IconButton
               aria-label="Open menu"
@@ -156,11 +157,11 @@ export function Navigation() {
                 variant="primary"
                 size="lg"
                 as="a"
-                href="#install"
+                href="/auth"
                 mt={4}
                 onClick={onClose}
               >
-                Connect Wallet
+                Connect
               </Button>
             </VStack>
           </DrawerBody>

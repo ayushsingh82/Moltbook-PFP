@@ -1,10 +1,10 @@
 "use client";
 
-import { Box, Container, Text, Spinner, Button, VStack } from "@chakra-ui/react";
+import { Box, Container, Text, Spinner, VStack } from "@chakra-ui/react";
+import { PageHeader } from "../../components";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
-import Link from "next/link";
 
 type AuthState = "loading" | "success" | "error";
 
@@ -35,7 +35,8 @@ export default function AuthPage() {
         username: `user_${profileId.slice(-6)}`,
       });
       setState("success");
-      router.replace("/dashboard");
+      // Delay navigation so context/localStorage is updated before dashboard reads it
+      setTimeout(() => router.replace("/dashboard"), 50);
     }, 1500);
 
     return () => clearTimeout(timer);
@@ -43,16 +44,13 @@ export default function AuthPage() {
 
   if (state === "error") {
     return (
-      <Box minH="100vh" bg="bauhaus.background" py={20}>
+      <Box minH="100vh" py={8}>
         <Container maxW="md">
-          <VStack spacing={6}>
-            <Text color="bauhaus.foreground" fontSize="xl" fontWeight="bold">
-              Authentication failed
-            </Text>
-            <Text color="text.secondary">{errorMessage}</Text>
-            <Button as={Link} href="/" variant="primary" size="md">
-              Back to home
-            </Button>
+          <VStack spacing={6} align="stretch">
+            <PageHeader
+              title="Authentication failed"
+              description={errorMessage}
+            />
           </VStack>
         </Container>
       </Box>
@@ -60,11 +58,11 @@ export default function AuthPage() {
   }
 
   return (
-    <Box minH="100vh" bg="bauhaus.background" display="flex" alignItems="center" justifyContent="center">
+    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
       <Container maxW="md">
         <VStack spacing={6}>
           <Spinner size="xl" color="bauhaus.orange" thickness="3px" />
-          <Text color="bauhaus.foreground" fontSize="lg">
+          <Text color="bauhaus.black" fontSize="lg">
             Verifying Moltbook profile…
           </Text>
         </VStack>

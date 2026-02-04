@@ -110,7 +110,7 @@ export function Hero() {
                 as="a"
                 href="#install"
               >
-                Connect Wallet
+                Connect
               </Button>
             </HStack>
           </motion.div>

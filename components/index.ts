@@ -1,4 +1,5 @@
 export { Navigation } from "./Navigation";
+export { PageHeader } from "./PageHeader";
 export { TokenBanner } from "./TokenBanner";
 export { Hero } from "./Hero";
 export { TweetGrid } from "./TweetGrid";

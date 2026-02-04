@@ -2,7 +2,6 @@
 
 import { Box } from "@chakra-ui/react";
 import {
-  Navigation,
   TokenBanner,
   Hero,
   TweetGrid,
@@ -13,8 +12,7 @@ import {
 
 export default function Home() {
   return (
-    <Box as="main" minH="100vh" bg="bauhaus.background">
-      <Navigation />
+    <Box as="main">
       <TokenBanner />
       <Hero />
       <TweetGrid />

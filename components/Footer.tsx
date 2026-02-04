@@ -9,7 +9,6 @@ import {
   Text,
   IconButton,
   useClipboard,
-  Image,
 } from "@chakra-ui/react";
 import { Copy, Check } from "lucide-react";
 import { LogoShapes } from "./ui/GeometricShape";
@@ -32,22 +31,28 @@ export function Footer() {
           >
             <VStack align={{ base: "center", md: "flex-start" }} spacing={3}>
               <HStack spacing={3}>
-                <Image
-                  border="4px solid"
-                  borderColor="bauhaus.foreground"
-                  src="/images/bankrwallet-animated.gif"
-                  fallbackSrc="/images/placeholder.svg"
-                  alt="Profile"
-                  w="32px"
-                  h="32px"
-                />
+                <Box
+                  bg="bauhaus.orange"
+                  color="bauhaus.black"
+                  w="40px"
+                  h="40px"
+                  borderRadius="md"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  border="2px solid"
+                  borderColor="bauhaus.black"
+                  fontWeight="black"
+                  fontSize="xl"
+                >
+                  P
+                </Box>
                 <Text
                   color="bauhaus.foreground"
                   fontWeight="black"
                   fontSize="xl"
-                  textTransform="uppercase"
                 >
-                  PROFILE
+                  Profile
                 </Text>
               </HStack>
               <Text
