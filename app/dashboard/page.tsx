@@ -30,14 +30,54 @@ const PAGE_BG_IMAGE =
 export default function DashboardPage() {
   const router = useRouter();
   const toast = useToast();
-  const { profile, isLoading, signOut, linkedAgents, linkAgent, unlinkAgent } = useMoltbookAuth();
+  const { profile, setProfile, isLoading, signOut, linkedAgents, linkAgent, unlinkAgent } = useMoltbookAuth();
   const [agentInput, setAgentInput] = useState("");
+  const [signInInput, setSignInInput] = useState("");
+  const [signInLoading, setSignInLoading] = useState(false);
 
-  useEffect(() => {
-    if (!isLoading && !profile) {
-      router.replace("/auth");
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = signInInput.trim();
+    if (!trimmed) {
+      toast({ title: "Enter your Moltbook profile link", status: "warning", duration: 2000 });
+      return;
     }
-  }, [profile, isLoading, router]);
+    const username = parseAgentUsername(trimmed);
+    if (!username) {
+      toast({
+        title: "Invalid link",
+        description: "Use format: https://www.moltbook.com/u/YourUsername or your username",
+        status: "error",
+        duration: 4000,
+      });
+      return;
+    }
+    setSignInLoading(true);
+    try {
+      const res = await fetch(`/api/moltbook/profile?name=${encodeURIComponent(username)}`);
+      const data = await res.json();
+      if (data.success && data.profile) {
+        const p = data.profile;
+        setProfile({
+          profileId: p.profileId || `mb_${username}`,
+          profileType: "human",
+          username: p.owner?.x_name || p.owner?.x_handle || p.username || username,
+        });
+      } else {
+        setProfile({
+          profileId: `mb_${username}`,
+          profileType: "human",
+          username,
+        });
+      }
+      linkAgent(username);
+      toast({ title: "Signed in", description: `Welcome, ${username}`, status: "success", duration: 2000 });
+    } catch {
+      toast({ title: "Could not fetch profile", status: "error", duration: 3000 });
+    } finally {
+      setSignInLoading(false);
+    }
+  };
 
   const handleAddAgent = () => {
     const name = agentInput.trim();
@@ -61,7 +101,71 @@ export default function DashboardPage() {
   };
 
   if (isLoading) return null;
-  if (!profile) return null;
+
+  // Not signed in: show sign-in step first (enter link, then show dashboard)
+  if (!profile) {
+    return (
+      <Box
+        minH="100vh"
+        py={8}
+        color="black"
+        backgroundImage={`url(${PAGE_BG_IMAGE})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        backgroundRepeat="no-repeat"
+      >
+        <Container maxW="md">
+          <Box
+            bg="white"
+            border="3px solid"
+            borderColor={BLUE}
+            borderRadius="xl"
+            overflow="hidden"
+            boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
+          >
+            <Box bg={BLUE} borderBottom="3px solid" borderColor={BLUE} px={5} py={4}>
+              <Text color="white" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" fontSize="xs">
+                Dashboard
+              </Text>
+            </Box>
+            <Box p={6}>
+              <form onSubmit={handleSignIn}>
+                <VStack spacing={5} align="stretch">
+                  <Text color="black" fontWeight="bold" fontSize="lg">
+                    Sign in with Moltbook
+                  </Text>
+                  <Text color="gray.600" fontSize="sm">
+                    Enter your Moltbook profile link. We’ll fetch your identity and then show your dashboard.
+                  </Text>
+                  <Input
+                    placeholder="https://www.moltbook.com/u/yourusername or yourusername"
+                    value={signInInput}
+                    onChange={(e) => setSignInInput(e.target.value)}
+                    disabled={signInLoading}
+                    borderColor={BLUE}
+                    _focus={{ borderColor: BLUE, boxShadow: `0 0 0 1px ${BLUE}` }}
+                    size="lg"
+                  />
+                  <Button
+                    type="submit"
+                    bg={BLUE}
+                    color="white"
+                    size="lg"
+                    w="full"
+                    isLoading={signInLoading}
+                    loadingText="Fetching…"
+                    _hover={{ bg: "#0000CC" }}
+                  >
+                    Sign in
+                  </Button>
+                </VStack>
+              </form>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    );
+  }
 
   const hasPFP = false;
   const isHuman = profile.profileType === "human";
@@ -176,6 +280,27 @@ export default function DashboardPage() {
                   </Badge>
                 </VStack>
               </HStack>
+
+              {/* Generate page CTA — show after auth */}
+              <Box py={6} borderBottom="2px solid" borderColor="gray.200">
+                <Text color="black" fontWeight="bold" mb={2}>
+                  Identity PFP
+                </Text>
+                <Text color="gray.600" fontSize="sm" mb={4}>
+                  Generate and mint your identity NFT. Set your PFP and metadata on the generate page.
+                </Text>
+                <Button
+                  as={Link}
+                  href="/generate"
+                  leftIcon={<ImagePlus size={18} />}
+                  bg={BLUE}
+                  color="white"
+                  size="lg"
+                  _hover={{ bg: "#0000CC" }}
+                >
+                  Generate & mint your identity PFP
+                </Button>
+              </Box>
 
               {/* PFP status */}
               <Box py={6} borderBottom="2px solid" borderColor="gray.200">

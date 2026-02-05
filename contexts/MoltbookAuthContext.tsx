@@ -13,6 +13,8 @@ export interface MoltbookProfile {
   profileId: string;
   profileType: ProfileType;
   username?: string;
+  /** Display name for identity NFT metadata (e.g. from dashboard). */
+  displayName?: string;
 }
 
 const STORAGE_KEY = "moltbook_profile";

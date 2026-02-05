@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * After deploy: give contract address to frontend for registry reads.
  */
 contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
-    uint256 private _nextTokenId;
+    uint256 private _nextTokenId = 1; // start at 1 so 0 = "not minted" in profileIdToTokenId
 
     // profileId (e.g. "ayushcursor" or "mb_xxx") -> tokenId
     mapping(string => uint256) public profileIdToTokenId;
@@ -28,12 +28,14 @@ contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
 
     event Minted(address indexed to, uint256 indexed tokenId, string profileId, string profileType);
 
-    constructor() ERC721("Moltbook Identity", "MBID") Ownable(msg.sender) {}
+    /// @param name_ NFT collection name (e.g. from dashboard)
+    /// @param symbol_ NFT symbol (e.g. "MBID")
+    constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) Ownable(msg.sender) {}
 
     /**
      * @notice Mint a new identity NFT. Only owner (deployer) can call. In production, add minter role or remove onlyOwner for public mint.
      * @param to Recipient address
-     * @param uri IPFS metadata URI (e.g. ipfs://Qm...)
+     * @param uri IPFS metadata URI (CID link to the JSON). Upload your metadata JSON to IPFS, then pass that URI here (e.g. ipfs://Qm...). The contract stores this so tokenURI(tokenId) resolves to your metadata.
      * @param profileId Moltbook profile ID (e.g. ayushcursor, mb_xxx)
      * @param profileType "human" or "agent"
      */
@@ -43,6 +45,8 @@ contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
         string calldata profileId,
         string calldata profileType
     ) external onlyOwner {
+        require(bytes(uri).length > 0, "metadata URI required");
+        require(bytes(profileId).length > 0, "profileId required");
         require(profileIdToTokenId[profileId] == 0, "Profile already minted");
         require(
             keccak256(bytes(profileType)) == keccak256("human") ||
@@ -73,7 +77,7 @@ contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
      * @notice Get full record for a token (for registry display).
      */
     function getRecord(uint256 tokenId)
-        external
+        public
         view
         returns (string memory profileId, string memory profileType, string memory uri, address owner)
     {
@@ -95,12 +99,7 @@ contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
         returns (string memory, string memory, string memory, address)
     {
         uint256 tokenId = profileIdToTokenId[profileId];
-        require(tokenId != 0 || _ownerOf(0) == address(0), "Profile not minted");
-        if (tokenId == 0 && _nextTokenId > 0) {
-            // Check if token 0 exists (edge case)
-            if (_ownerOf(0) == address(0)) revert("Profile not minted");
-        }
-        if (tokenId == 0) revert("Profile not minted");
+        require(tokenId != 0, "Profile not minted");
         return getRecord(tokenId);
     }
 

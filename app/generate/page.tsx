@@ -454,7 +454,7 @@ export default function GeneratePage() {
                 >
                   {JSON.stringify(
                     {
-                      name: "Moltbook Identity",
+                      name: profile.displayName ?? profile.username ?? "Moltbook Identity",
                       description: "Verified Moltbook profile PFP",
                       moltbook_profile_id: profile.profileId,
                       profile_type: profile.profileType,
