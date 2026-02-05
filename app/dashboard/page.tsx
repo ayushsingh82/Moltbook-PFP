@@ -8,22 +8,30 @@ import {
   HStack,
   Button,
   Badge,
+  Input,
+  InputGroup,
+  InputRightElement,
+  useToast,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { PageHeader } from "../../components";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
-import { BadgeCheck, ImagePlus, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useMoltbookAuth, parseAgentUsername } from "../../contexts/MoltbookAuthContext";
+import { BadgeCheck, ImagePlus, LogOut, Bot, ExternalLink, X } from "lucide-react";
 
 const BLUE = "#0000FF";
 const BLUE_200 = "#90CDF4";
+const MOLTBOOK_AGENT_URL = "https://www.moltbook.com/u";
 const PAGE_BG_IMAGE =
   "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { profile, isLoading, signOut } = useMoltbookAuth();
+  const toast = useToast();
+  const { profile, isLoading, signOut, linkedAgents, linkAgent, unlinkAgent } = useMoltbookAuth();
+  const [agentInput, setAgentInput] = useState("");
 
   useEffect(() => {
     if (!isLoading && !profile) {
@@ -31,10 +39,32 @@ export default function DashboardPage() {
     }
   }, [profile, isLoading, router]);
 
+  const handleAddAgent = () => {
+    const name = agentInput.trim();
+    if (!name) {
+      toast({ title: "Enter agent username or paste profile URL", status: "warning", duration: 2000 });
+      return;
+    }
+    const parsed = parseAgentUsername(name);
+    if (!parsed) {
+      toast({ title: "Invalid input", status: "warning", duration: 2000 });
+      return;
+    }
+    linkAgent(name);
+    setAgentInput("");
+    toast({
+      title: linkedAgents.length > 0 ? "Agent replaced" : "Agent linked",
+      description: `${parsed} is now linked to your account.`,
+      status: "success",
+      duration: 3000,
+    });
+  };
+
   if (isLoading) return null;
   if (!profile) return null;
 
   const hasPFP = false;
+  const isHuman = profile.profileType === "human";
 
   return (
     <Box
@@ -175,20 +205,152 @@ export default function DashboardPage() {
                 )}
               </Box>
 
+              {/* Verify Moltbook agent (humans only) */}
+              {isHuman && (
+                <Box py={6} borderBottom="2px solid" borderColor="gray.200">
+                  <Text color="black" fontWeight="bold" mb={2}>
+                    My Moltbook agents
+                  </Text>
+                  <Text color="gray.600" fontSize="sm" mb={3}>
+                    Add your deployed and verified Moltbook agent (one per account). Paste username or profile URL.
+                  </Text>
+                  {linkedAgents.length === 0 && (
+                  <InputGroup mb={3}>
+                    <Input
+                      placeholder="ayushcursor or https://www.moltbook.com/u/ayushcursor"
+                      value={agentInput}
+                      onChange={(e) => setAgentInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAddAgent()}
+                      borderColor={BLUE}
+                      _focus={{ borderColor: BLUE, boxShadow: `0 0 0 1px ${BLUE}` }}
+                    />
+                    <InputRightElement width="auto" pr={2}>
+                      <Button
+                        size="sm"
+                        bg={BLUE}
+                        color="white"
+                        onClick={handleAddAgent}
+                        _hover={{ bg: "#0000CC" }}
+                      >
+                        Add
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                  )}
+                  {linkedAgents.length > 0 && (
+                    <InputGroup mb={3}>
+                      <Input
+                        placeholder="Replace with another agent"
+                        value={agentInput}
+                        onChange={(e) => setAgentInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleAddAgent()}
+                        borderColor={BLUE}
+                        _focus={{ borderColor: BLUE, boxShadow: `0 0 0 1px ${BLUE}` }}
+                      />
+                      <InputRightElement width="auto" pr={2}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          borderColor={BLUE}
+                          color={BLUE}
+                          onClick={handleAddAgent}
+                          _hover={{ bg: "blue.50" }}
+                        >
+                          Replace
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                  )}
+                  {linkedAgents.length > 0 && (
+                    <VStack align="stretch" spacing={2}>
+                      {linkedAgents.map((a) => (
+                        <HStack
+                          key={a.agentName}
+                          p={2}
+                          bg="gray.50"
+                          borderRadius="md"
+                          border="1px solid"
+                          borderColor="gray.200"
+                          justify="space-between"
+                        >
+                          <HStack spacing={2}>
+                            <Bot size={16} color={BLUE} />
+                            <Badge
+                              bg="green.500"
+                              color="white"
+                              px={2}
+                              py={0.5}
+                              borderRadius="md"
+                              fontSize="xs"
+                            >
+                              <HStack spacing={1}>
+                                <BadgeCheck size={10} />
+                                <span>Verified</span>
+                              </HStack>
+                            </Badge>
+                            <Text fontWeight="medium" fontFamily="mono">
+                              {a.agentName}
+                            </Text>
+                            <ChakraLink
+                              as="a"
+                              href={`${MOLTBOOK_AGENT_URL}/${a.agentName}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              color={BLUE}
+                              fontSize="sm"
+                            >
+                              <ExternalLink size={14} />
+                            </ChakraLink>
+                          </HStack>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            colorScheme="red"
+                            aria-label={`Remove ${a.agentName}`}
+                            onClick={() => unlinkAgent(a.agentName)}
+                          >
+                            <X size={14} />
+                          </Button>
+                        </HStack>
+                      ))}
+                    </VStack>
+                  )}
+                </Box>
+              )}
+
               {/* Actions */}
               <VStack spacing={3} pt={6} align="stretch">
-                <Button
-                  as={Link}
-                  href="/generate"
-                  bg={BLUE}
-                  color="white"
-                  size="lg"
-                  leftIcon={<ImagePlus size={20} />}
-                  w="full"
-                  _hover={{ bg: "#0000CC" }}
-                >
-                  Generate & mint PFP
-                </Button>
+                {profile.profileType === "agent" ? (
+                  <Box
+                    py={4}
+                    px={4}
+                    bg="gray.100"
+                    borderRadius="lg"
+                    border="2px dashed"
+                    borderColor="gray.300"
+                    textAlign="center"
+                  >
+                    <Text color="gray.600" fontWeight="bold">
+                      Coming soon
+                    </Text>
+                    <Text color="gray.500" fontSize="sm" mt={1}>
+                      Agent PFP generation and registry
+                    </Text>
+                  </Box>
+                ) : (
+                  <Button
+                    as={Link}
+                    href="/generate"
+                    bg={BLUE}
+                    color="white"
+                    size="lg"
+                    leftIcon={<ImagePlus size={20} />}
+                    w="full"
+                    _hover={{ bg: "#0000CC" }}
+                  >
+                    Generate & mint PFP
+                  </Button>
+                )}
               </VStack>
             </VStack>
           </Box>

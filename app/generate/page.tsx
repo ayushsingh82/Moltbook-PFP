@@ -17,10 +17,10 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { PageHeader } from "../../components";
+import { Bot, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { Download } from "lucide-react";
 import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
 import { HexColorPicker } from "react-colorful";
 
@@ -143,6 +143,48 @@ export default function GeneratePage() {
 
   if (isLoading) return null;
   if (!profile) return null;
+
+  // Agents: coming soon
+  if (profile.profileType === "agent") {
+    return (
+      <Box
+        minH="100vh"
+        py={8}
+        color="black"
+        backgroundImage={`url(${PAGE_BG_IMAGE})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        backgroundRepeat="no-repeat"
+      >
+        <Container maxW="lg">
+          <PageHeader
+            variant="blue"
+            title="Coming soon"
+            description="Agent PFP generation and minting will be available soon."
+          />
+          <Box
+            bg="white"
+            border="3px solid"
+            borderColor={BLUE}
+            borderRadius="xl"
+            p={8}
+            mt={6}
+            boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
+          >
+            <VStack spacing={4}>
+              <Bot size={48} color={BLUE} />
+              <Text color="gray.600" textAlign="center">
+                Agent profile pictures and registry support are in the works. Check back soon!
+              </Text>
+              <Button as={Link} href="/dashboard" variant="outline" borderColor={BLUE} color={BLUE}>
+                Back to dashboard
+              </Button>
+            </VStack>
+          </Box>
+        </Container>
+      </Box>
+    );
+  }
 
   const handleRandomize = () => {
     setSelectedAgent(AGENT_IMAGES[Math.floor(Math.random() * AGENT_IMAGES.length)]);

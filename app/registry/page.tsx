@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { PageHeader } from "../../components";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Bot } from "lucide-react";
 
 const BLUE = "#0000FF";
 const SHADOW_LIGHT_BLUE = "#ADD8E6";
@@ -26,13 +26,16 @@ const PAGE_BG_IMAGE =
   "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
 
 // Mock registry data. In production, fetch from API or chain.
+// Registry shows humans only; agents coming soon.
 const MOCK_REGISTRY = [
-  { profileId: "mb_abc123", mintAddress: "0x1234567890abcdef1234567890abcdef12345678", profileType: "human" },
-  { profileId: "mb_def456", mintAddress: "0xabcdef1234567890abcdef1234567890abcdef", profileType: "agent" },
-  { profileId: "mb_ghi789", mintAddress: "0x9876543210fedcba9876543210fedcba98765432", profileType: "human" },
-  { profileId: "mb_jkl012", mintAddress: "0x1111222233334444555566667777888899990000", profileType: "agent" },
-  { profileId: "mb_mno345", mintAddress: "0xaaaabbbbccccddddeeeeffff0000111122223333", profileType: "human" },
+  { profileId: "mb_abc123", mintAddress: "0x1234567890abcdef1234567890abcdef12345678", profileType: "human" as const },
+  { profileId: "mb_def456", mintAddress: "0xabcdef1234567890abcdef1234567890abcdef", profileType: "agent" as const },
+  { profileId: "mb_ghi789", mintAddress: "0x9876543210fedcba9876543210fedcba98765432", profileType: "human" as const },
+  { profileId: "mb_jkl012", mintAddress: "0x1111222233334444555566667777888899990000", profileType: "agent" as const },
+  { profileId: "mb_mno345", mintAddress: "0xaaaabbbbccccddddeeeeffff0000111122223333", profileType: "human" as const },
 ];
+
+const HUMAN_REGISTRY = MOCK_REGISTRY.filter((r) => r.profileType === "human");
 
 function truncateAddress(addr: string, start = 6, end = 4) {
   if (addr.length <= start + end) return addr;
@@ -60,7 +63,7 @@ export default function RegistryPage() {
 
           <HStack justify="space-between" align="center" flexWrap="wrap" gap={2}>
             <Text color={BLUE} fontSize="sm" fontWeight="bold">
-              {MOCK_REGISTRY.length} profile{MOCK_REGISTRY.length !== 1 ? "s" : ""} registered
+              {HUMAN_REGISTRY.length} human{HUMAN_REGISTRY.length !== 1 ? "s" : ""} registered
             </Text>
           </HStack>
 
@@ -116,7 +119,7 @@ export default function RegistryPage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {MOCK_REGISTRY.map((row) => (
+                {HUMAN_REGISTRY.map((row) => (
                   <Tr
                     key={row.profileId}
                     borderBottom="1px solid"
@@ -184,6 +187,38 @@ export default function RegistryPage() {
               </Tbody>
             </Table>
           </TableContainer>
+
+          {/* Agents - Coming soon */}
+          <Box
+            bg="white"
+            border="3px solid"
+            borderColor={BLUE}
+            borderRadius="xl"
+            overflow="hidden"
+            boxShadow={`6px 6px 0px 0px ${SHADOW_LIGHT_BLUE}`}
+            p={6}
+          >
+            <HStack spacing={3} mb={2}>
+              <Bot size={24} color={BLUE} />
+              <Text color={BLUE} fontWeight="bold" fontSize="lg">
+                Agent registry
+              </Text>
+              <Badge
+                bg="gray.400"
+                color="white"
+                px={2}
+                py={0.5}
+                borderRadius="md"
+                fontSize="xs"
+                fontWeight="bold"
+              >
+                Coming soon
+              </Badge>
+            </HStack>
+            <Text color="gray.600" fontSize="sm">
+              Agent profiles and NFT mint addresses will appear here once the agent registry is live.
+            </Text>
+          </Box>
         </VStack>
       </Container>
     </Box>

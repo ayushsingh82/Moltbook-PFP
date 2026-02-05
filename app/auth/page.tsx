@@ -1,95 +1,125 @@
 "use client";
 
-import { Box, Container, Text, Spinner, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Text,
+  VStack,
+  Input,
+  Button,
+  useToast,
+} from "@chakra-ui/react";
 import { PageHeader } from "../../components";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
+import { parseAgentUsername } from "../../contexts/MoltbookAuthContext";
 
-type AuthState = "loading" | "success" | "error";
+const BLUE = "#0000FF";
 
-function AuthContent() {
+export default function AuthPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { setProfile } = useMoltbookAuth();
-  const [state, setState] = useState<AuthState>("loading");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const toast = useToast();
+  const { setProfile, linkAgent } = useMoltbookAuth();
+  const [urlInput, setUrlInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // Simulate Moltbook auth verification. In production, validate token/code from query.
-    const code = searchParams.get("code");
-    const error = searchParams.get("error");
-
-    if (error) {
-      setState("error");
-      setErrorMessage("Authentication failed");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = urlInput.trim();
+    if (!trimmed) {
+      toast({ title: "Enter your Moltbook profile URL", status: "warning", duration: 2000 });
       return;
     }
 
-    const timer = setTimeout(() => {
-      // Mock: treat as success and create a profile. Replace with real Moltbook API call.
-      const profileId = code || `mb_${Date.now().toString(36)}`;
-      setProfile({
-        profileId,
-        profileType: "human",
-        username: `user_${profileId.slice(-6)}`,
+    const username = parseAgentUsername(trimmed);
+    if (!username) {
+      toast({
+        title: "Invalid URL",
+        description: "Use format: https://www.moltbook.com/u/YourUsername",
+        status: "error",
+        duration: 4000,
       });
-      setState("success");
-      // Delay navigation so context/localStorage is updated before dashboard reads it
-      setTimeout(() => router.replace("/dashboard"), 50);
-    }, 1500);
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [searchParams, setProfile, router]);
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/moltbook/profile?name=${encodeURIComponent(username)}`);
+      const data = await res.json();
 
-  if (state === "error") {
-    return (
-      <Box minH="100vh" py={8}>
-        <Container maxW="md">
+      if (data.success && data.profile) {
+        const p = data.profile;
+        setProfile({
+          profileId: p.profileId || `mb_${username}`,
+          profileType: "human",
+          username: p.owner?.x_name || p.owner?.x_handle || p.username || username,
+        });
+      } else {
+        setProfile({
+          profileId: `mb_${username}`,
+          profileType: "human",
+          username,
+        });
+      }
+      linkAgent(username);
+
+      toast({
+        title: "Welcome",
+        description: `Signed in with ${username}`,
+        status: "success",
+        duration: 2000,
+      });
+
+      router.replace("/dashboard");
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Could not connect. Try again.",
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Box minH="100vh" py={12} display="flex" alignItems="center" justifyContent="center">
+      <Container maxW="md">
+        <form onSubmit={handleSubmit}>
           <VStack spacing={6} align="stretch">
             <PageHeader
-              title="Authentication failed"
-              description={errorMessage}
+              title="Sign in with Moltbook"
+              description="Paste your Moltbook profile URL. We'll fetch your verified identity."
             />
+            <Input
+              placeholder="https://www.moltbook.com/u/yourusername"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              disabled={isLoading}
+              borderColor={BLUE}
+              _focus={{ borderColor: BLUE, boxShadow: `0 0 0 1px ${BLUE}` }}
+              size="lg"
+            />
+            <Button
+              type="submit"
+              bg={BLUE}
+              color="white"
+              size="lg"
+              w="full"
+              isLoading={isLoading}
+              loadingText="Fetching profile…"
+              _hover={{ bg: "#0000CC" }}
+            >
+              Continue
+            </Button>
+            <Text color="gray.600" fontSize="sm" textAlign="center">
+              Enter your agent profile URL (e.g. moltbook.com/u/ayushcursor) if you’ve claimed it via Twitter.
+            </Text>
           </VStack>
-        </Container>
-      </Box>
-    );
-  }
-
-  return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
-      <Container maxW="md">
-        <VStack spacing={6}>
-          <Spinner size="xl" color="bauhaus.orange" thickness="3px" />
-          <Text color="bauhaus.black" fontSize="lg">
-            Verifying Moltbook profile…
-          </Text>
-        </VStack>
+        </form>
       </Container>
     </Box>
-  );
-}
-
-function AuthFallback() {
-  return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
-      <Container maxW="md">
-        <VStack spacing={6}>
-          <Spinner size="xl" color="bauhaus.orange" thickness="3px" />
-          <Text color="bauhaus.black" fontSize="lg">
-            Loading…
-          </Text>
-        </VStack>
-      </Container>
-    </Box>
-  );
-}
-
-export default function AuthPage() {
-  return (
-    <Suspense fallback={<AuthFallback />}>
-      <AuthContent />
-    </Suspense>
   );
 }
