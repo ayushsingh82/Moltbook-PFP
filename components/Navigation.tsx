@@ -6,7 +6,6 @@ import {
   Flex,
   HStack,
   Link,
-  Button,
   IconButton,
   Image,
   Drawer,
@@ -18,6 +17,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Menu } from "lucide-react";
 
 const BLUE = "#0000FF";
@@ -81,17 +81,9 @@ export function Navigation() {
           </HStack>
 
           <HStack spacing={4}>
-            <Button
-              bg={BLUE}
-              color="white"
-              size="md"
-              as="a"
-              href="/auth"
-              display={{ base: "none", md: "flex" }}
-              _hover={{ bg: "#0000CC", color: "white" }}
-            >
-              Connect
-            </Button>
+            <Box display={{ base: "none", md: "block" }}>
+              <ConnectButton />
+            </Box>
             <IconButton
               aria-label="Open menu"
               icon={<Menu size={24} />}
@@ -145,18 +137,9 @@ export function Navigation() {
                   {link.label}
                 </Link>
               ))}
-              <Button
-                bg={BLUE}
-                color="white"
-                size="lg"
-                as="a"
-                href="/auth"
-                mt={4}
-                onClick={onClose}
-                _hover={{ bg: "#0000CC", color: "white" }}
-              >
-                Connect
-              </Button>
+              <Box mt={4} onClick={onClose}>
+                <ConnectButton />
+              </Box>
             </VStack>
           </DrawerBody>
         </DrawerContent>
