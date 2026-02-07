@@ -4,9 +4,9 @@ import { Box } from "@chakra-ui/react";
 import {
   TokenBanner,
   Hero,
-  TweetGrid,
+  // TweetGrid,  // What people are saying — commented out for now
   Features,
-  TokenSection,
+  // TokenSection,  // Token section — commented out for now
   Footer,
 } from "../components";
 
@@ -17,12 +17,13 @@ export default function Home() {
       <TokenBanner />
       <Hero />
       {thinLine}
+      {/* {thinLine}
       <TweetGrid />
-      {thinLine}
+      {thinLine} */}
       <Features />
       {thinLine}
-      <TokenSection />
-      {thinLine}
+      {/* <TokenSection />
+      {thinLine} */}
       <Footer />
     </Box>
   );

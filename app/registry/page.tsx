@@ -30,7 +30,7 @@ const SHADOW_LIGHT_BLUE = "#ADD8E6";
 const PAGE_BG_IMAGE =
   "https://img.freepik.com/premium-photo/sky-with-beautiful-cloud-background_570543-6327.jpg?semt=ais_hybrid&w=740&q=80";
 
-const MAX_RECORDS = 100n;
+const MAX_RECORDS = BigInt(100);
 
 function ipfsToGateway(uri: string): string {
   if (!uri || typeof uri !== "string") return "";
@@ -96,10 +96,10 @@ export default function RegistryPage() {
     address,
     abi: MOLTBOOK_IDENTITY_NFT_ABI,
     functionName: "getAllRecords",
-    args: [0n, MAX_RECORDS],
+    args: [BigInt(0), MAX_RECORDS],
   });
 
-  const total = totalSupply ?? 0n;
+  const total = totalSupply ?? BigInt(0);
   const [tokenIds = [], profileIds = [], profileTypes = [], uris = [], owners = []] = recordsData ?? [];
   const registry = tokenIds.map((_, i) => ({
     tokenId: tokenIds[i],

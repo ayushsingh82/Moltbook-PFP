@@ -8,18 +8,11 @@ import {
   VStack,
   Text,
   Image,
-  IconButton,
-  useClipboard,
 } from "@chakra-ui/react";
-import { Copy, Check } from "lucide-react";
-import { TOKEN_ADDRESS } from "../constants";
 
 const BLUE = "#0000FF";
 
 export function Footer() {
-  const { hasCopied, onCopy } = useClipboard(TOKEN_ADDRESS);
-  const truncatedAddress = `${TOKEN_ADDRESS.slice(0, 6)}...${TOKEN_ADDRESS.slice(-4)}`;
-
   return (
     <Box fontFamily="serif" bg={BLUE} color="white" py={{ base: 8, md: 16 }}>
       <Container maxW="7xl">
@@ -63,18 +56,9 @@ export function Footer() {
                 <Text color="whiteAlpha.800" fontSize="xs">
                   Contract:
                 </Text>
-                <Text color="whiteAlpha.900" fontFamily="mono" fontSize="xs">
-                  {truncatedAddress}
+                <Text color="whiteAlpha.900" fontSize="xs" fontStyle="italic">
+                  Coming soon
                 </Text>
-                <IconButton
-                  aria-label="Copy address"
-                  icon={hasCopied ? <Check size={14} /> : <Copy size={14} />}
-                  size="xs"
-                  variant="ghost"
-                  color="whiteAlpha.900"
-                  onClick={onCopy}
-                  _hover={{ color: "white", bg: "whiteAlpha.200" }}
-                />
               </HStack>
             </VStack>
           </Flex>

@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import { PageHeader } from "../../../components";
-import { BadgeCheck, Copy } from "lucide-react";
+import { BadgeCheck, Copy, Share2 } from "lucide-react";
 import { useReadContract } from "wagmi";
 import { MOLTBOOK_IDENTITY_NFT_ABI, getNftContractAddress } from "../../../lib/nft-contract";
 import { useEffect, useState } from "react";
@@ -45,8 +45,17 @@ export default function ProfileViewPage() {
     functionName: "getRecordByProfile",
     args: moltbookId ? [moltbookId] : undefined,
   });
+  const { data: tokenIdBigInt } = useReadContract({
+    address,
+    abi: MOLTBOOK_IDENTITY_NFT_ABI,
+    functionName: "getTokenByProfile",
+    args: moltbookId ? [moltbookId] : undefined,
+  });
 
   const [profileId, profileType, uri, owner] = record ?? ["", "", "", "0x"];
+  const tokenId = tokenIdBigInt != null && tokenIdBigInt > BigInt(0) ? String(tokenIdBigInt) : null;
+  const BASE_SEPOLIA_TOKEN_URL = `https://sepolia.basescan.org/token/${address}`;
+  const verifyOnChainUrl = tokenId ? `${BASE_SEPOLIA_TOKEN_URL}?a=${tokenId}` : null;
 
   useEffect(() => {
     if (!uri || uri === "") return;
@@ -66,6 +75,22 @@ export default function ProfileViewPage() {
       navigator.clipboard.writeText(window.location.href);
       toast({ title: "Link copied", status: "success", duration: 2000 });
     }
+  };
+
+  const shareOnX = () => {
+    if (typeof window === "undefined") return;
+    // Use production URL in tweet so shared link is always https://moltbook-pfp.vercel.app
+    const baseUrl =
+      typeof process !== "undefined" && process.env.NEXT_PUBLIC_APP_URL
+        ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "")
+        : "https://moltbook-pfp.vercel.app";
+    const profileUrl = `${baseUrl}/profile/${moltbookId}`;
+    // Tweet with line gaps: verified profile, Base-Sepolia, verify link, then profile URL
+    const message = verifyOnChainUrl
+      ? `I verified my Moltbook profile — ${displayName} — and linked it to my X account.\n\nMy on-chain identity is live on Base-Sepolia\n\nVerify the NFT: ${verifyOnChainUrl} @MoltbookPFP\n\n${profileUrl}`
+      : `I verified my Moltbook profile — ${displayName} — and linked it to my X account.\n\nMy on-chain identity is live on Base-Sepolia\n\n@MoltbookPFP\n\n${profileUrl}`;
+    const text = encodeURIComponent(message);
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank", "noopener,noreferrer,width=550,height=420");
   };
 
   if (!moltbookId) {
@@ -225,18 +250,32 @@ export default function ProfileViewPage() {
             </>
           )}
 
-          <Button
-            leftIcon={<Copy size={16} />}
-            variant="outline"
-            size="md"
-            w="full"
-            borderColor={BLUE}
-            color={BLUE}
-            _hover={{ bg: "blue.50" }}
-            onClick={copyLink}
-          >
-            Copy profile link
-          </Button>
+          <HStack spacing={3} w="full">
+            <Button
+              leftIcon={<Copy size={16} />}
+              variant="outline"
+              size="md"
+              flex={1}
+              borderColor={BLUE}
+              color={BLUE}
+              _hover={{ bg: "blue.50" }}
+              onClick={copyLink}
+            >
+              Copy link
+            </Button>
+            <Button
+              leftIcon={<Share2 size={16} />}
+              variant="outline"
+              size="md"
+              flex={1}
+              borderColor={BLUE}
+              color={BLUE}
+              _hover={{ bg: "blue.50" }}
+              onClick={shareOnX}
+            >
+              Share on X
+            </Button>
+          </HStack>
         </VStack>
       </Container>
     </Box>
