@@ -23,6 +23,9 @@ import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { useMoltbookAuth } from "../../contexts/MoltbookAuthContext";
 import { HexColorPicker } from "react-colorful";
+import { useAccount, useWriteContract } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { MOLTBOOK_IDENTITY_NFT_ABI, getNftContractAddress } from "../../lib/nft-contract";
 
 const BLUE = "#0000FF";
 const BLUE_200 = "#90CDF4";
@@ -128,12 +131,15 @@ export default function GeneratePage() {
   const router = useRouter();
   const toast = useToast();
   const { profile, isLoading } = useMoltbookAuth();
+  const { address: walletAddress, isConnected } = useAccount();
+  const { writeContractAsync, isPending: isContractPending } = useWriteContract();
   const [innerBoxBg, setInnerBoxBg] = useState("#171717");
   const [innerBoxBorder, setInnerBoxBorder] = useState("#ffffff");
   const [selectedAgent, setSelectedAgent] = useState<(typeof AGENT_IMAGES)[number]>(AGENT_IMAGES[0]);
   const [mintState, setMintState] = useState<MintState>("idle");
-  const [mintAddress, setMintAddress] = useState<string>("");
+  const [mintTxHash, setMintTxHash] = useState<string>("");
   const previewRef = useRef<HTMLDivElement>(null);
+  const contractAddress = getNftContractAddress();
 
   useEffect(() => {
     if (!isLoading && !profile) router.replace("/auth");
@@ -195,7 +201,7 @@ export default function GeneratePage() {
     toPng(previewRef.current, { pixelRatio: 2 })
       .then((dataUrl) => {
         const link = document.createElement("a");
-        link.download = "a2base-pfp.png";
+        link.download = "moltbook-pfp.png";
         link.href = dataUrl;
         link.click();
       })
@@ -205,11 +211,68 @@ export default function GeneratePage() {
   };
 
   const handleMint = async () => {
+    if (!profile) return;
+    if (!isConnected || !walletAddress) {
+      toast({ title: "Connect your wallet first", status: "warning", duration: 3000 });
+      return;
+    }
+    if (!contractAddress) {
+      toast({ title: "Contract not configured", description: "Set NEXT_PUBLIC_NFT_CONTRACT_ADDRESS", status: "error", duration: 5000 });
+      return;
+    }
+    if (!previewRef.current) {
+      toast({ title: "Preview not ready", status: "warning", duration: 2000 });
+      return;
+    }
+
     setMintState("loading");
     try {
-      await new Promise((r) => setTimeout(r, 2500));
-      const mockAddress = `0x${Date.now().toString(16).slice(-40)}`;
-      setMintAddress(mockAddress);
+      // 1) Capture final PFP as PNG (pixelRatio 1.5 keeps size reasonable for IPFS)
+      const dataUrl = await toPng(previewRef.current, { pixelRatio: 1.5 });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], "pfp.png", { type: "image/png" });
+
+      // 2) Upload image to IPFS
+      const formData = new FormData();
+      formData.append("file", file);
+      const pinFileRes = await fetch("/api/ipfs/pin-file", { method: "POST", body: formData });
+      if (!pinFileRes.ok) {
+        const err = await pinFileRes.json().catch(() => ({}));
+        const raw = err?.error;
+        const msg = typeof raw === "string" ? raw : (raw && typeof raw === "object" && "message" in raw ? String((raw as { message: unknown }).message) : null) ?? "Image upload failed (check PINATA_JWT in .env)";
+        throw new Error(msg);
+      }
+      const { uri: imageUri } = await pinFileRes.json();
+
+      // 3) Build metadata and upload to IPFS
+      const metadata = {
+        name: profile.displayName ?? profile.username ?? "Moltbook Identity",
+        description: "Verified Moltbook profile PFP",
+        image: imageUri,
+        moltbook_profile_id: profile.profileId,
+        profile_type: profile.profileType,
+      };
+      const pinJsonRes = await fetch("/api/ipfs/pin-json", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(metadata),
+      });
+      if (!pinJsonRes.ok) {
+        const err = await pinJsonRes.json().catch(() => ({}));
+        const msg = typeof err?.error === "string" ? err.error : err?.error?.message ?? (err?.error ? String(err.error) : "Metadata upload failed");
+        throw new Error(msg);
+      }
+      const { uri: metadataUri } = await pinJsonRes.json();
+
+      // 4) Mint on contract (to = connected wallet, uri = metadata CID)
+      const hash = await writeContractAsync({
+        address: contractAddress,
+        abi: MOLTBOOK_IDENTITY_NFT_ABI,
+        functionName: "mint",
+        args: [walletAddress, metadataUri, profile.profileId, profile.profileType],
+      });
+      setMintTxHash(hash);
       setMintState("success");
       toast({
         title: "NFT minted",
@@ -217,9 +280,17 @@ export default function GeneratePage() {
         status: "success",
         duration: 5000,
       });
-    } catch {
+    } catch (e) {
       setMintState("error");
-      toast({ title: "Mint failed", status: "error", duration: 5000 });
+      let msg = "Mint failed. Try again.";
+      if (e instanceof Error) {
+        msg = e.message;
+      } else if (e && typeof e === "object" && "message" in e && typeof (e as { message: unknown }).message === "string") {
+        msg = (e as { message: string }).message;
+      } else if (e && typeof e === "object") {
+        msg = JSON.stringify(e).slice(0, 200) || msg;
+      }
+      toast({ title: "Mint failed", description: msg, status: "error", duration: 6000 });
     }
   };
 
@@ -259,18 +330,34 @@ export default function GeneratePage() {
               <Text color="black" fontWeight="bold">
                 Your identity NFT is on chain
               </Text>
-              <Box
-                w="full"
-                p={3}
-                bg="gray.50"
-                borderRadius="md"
-                border="2px solid"
-                borderColor={BLUE}
-              >
-                <Text color="black" fontSize="xs" fontFamily="mono" wordBreak="break-all">
-                  {mintAddress}
-                </Text>
-              </Box>
+              {mintTxHash && (
+                <Box
+                  w="full"
+                  p={3}
+                  bg="gray.50"
+                  borderRadius="md"
+                  border="2px solid"
+                  borderColor={BLUE}
+                >
+                  <Text color="gray.600" fontSize="xs" mb={1}>Transaction</Text>
+                  <Text color="black" fontSize="xs" fontFamily="mono" wordBreak="break-all">
+                    {mintTxHash}
+                  </Text>
+                  <Button
+                    as="a"
+                    href={`https://sepolia.basescan.org/tx/${mintTxHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="sm"
+                    mt={2}
+                    variant="outline"
+                    borderColor={BLUE}
+                    color={BLUE}
+                  >
+                    View on BaseScan
+                  </Button>
+                </Box>
+              )}
               <Button as={Link} href={`/profile/${profile.profileId}`} bg={BLUE} color="white" size="lg" w="full" _hover={{ bg: "#0000CC" }}>
                 View profile
               </Button>
@@ -471,19 +558,28 @@ export default function GeneratePage() {
               </Box>
             )}
             <Box p={6}>
-              <Button
-                bg={BLUE}
-                color="white"
-                size="lg"
-                w="full"
-                onClick={handleMint}
-                isLoading={mintState === "loading"}
-                loadingText="Minting…"
-                leftIcon={mintState === "loading" ? <Spinner size="sm" /> : undefined}
-                _hover={{ bg: "#0000CC" }}
-              >
-                Mint NFT
-              </Button>
+              {!isConnected ? (
+                <VStack spacing={3}>
+                  <Text color="gray.600" fontSize="sm">Connect your wallet to mint.</Text>
+                  <ConnectButton />
+                </VStack>
+              ) : !contractAddress ? (
+                <Text color="orange.600" fontSize="sm">NEXT_PUBLIC_NFT_CONTRACT_ADDRESS is not set. Deploy the contract on Base Sepolia and add the address to .env</Text>
+              ) : (
+                <Button
+                  bg={BLUE}
+                  color="white"
+                  size="lg"
+                  w="full"
+                  onClick={handleMint}
+                  isLoading={mintState === "loading" || isContractPending}
+                  loadingText="Uploading & minting…"
+                  leftIcon={mintState === "loading" || isContractPending ? <Spinner size="sm" /> : undefined}
+                  _hover={{ bg: "#0000CC" }}
+                >
+                  Mint NFT
+                </Button>
+              )}
             </Box>
           </VStack>
         </Box>

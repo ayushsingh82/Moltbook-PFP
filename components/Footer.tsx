@@ -45,10 +45,10 @@ export function Footer() {
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <Image src="/images/logo.png" alt="A2Base" h="full" w="auto" objectFit="contain" />
+                  <Image src="/images/logo.png" alt="Moltbook-PFP" h="full" w="auto" objectFit="contain" />
                 </Box>
                 <Text color="white" fontWeight="black" fontSize="xl">
-                  A2Base
+                  Moltbook-PFP
                 </Text>
               </HStack>
               <Text
@@ -89,7 +89,7 @@ export function Footer() {
             gap={4}
           >
             <Text color="whiteAlpha.800" fontSize="sm">
-              © {new Date().getFullYear()} A2Base
+              © {new Date().getFullYear()} Moltbook-PFP
             </Text>
             <HStack spacing={1}>
               <Box w="10px" h="10px" borderRadius="full" bg="white" />

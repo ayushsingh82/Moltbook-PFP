@@ -20,7 +20,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "A2Base",
+  title: "Moltbook-PFP",
   description: "Verified Moltbook identity PFPs — one NFT per profile, on chain.",
 };
 

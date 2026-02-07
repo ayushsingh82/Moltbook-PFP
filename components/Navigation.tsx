@@ -55,10 +55,10 @@ export function Navigation() {
                 alignItems="center"
                 justifyContent="center"
               >
-                <Image src="/images/logo.png" alt="A2Base" h="full" w="auto" objectFit="contain" />
+                <Image src="/images/logo.png" alt="Moltbook-PFP" h="full" w="auto" objectFit="contain" />
               </Box>
               <Box fontWeight="black" fontSize="xl" color="black">
-                A2Base
+                Moltbook-PFP
               </Box>
             </HStack>
           </Link>
@@ -113,10 +113,10 @@ export function Navigation() {
                 alignItems="center"
                 justifyContent="center"
               >
-                <Image src="/images/logo.png" alt="A2Base" h="full" w="auto" objectFit="contain" />
+                <Image src="/images/logo.png" alt="Moltbook-PFP" h="full" w="auto" objectFit="contain" />
               </Box>
               <Box color="black" fontWeight="black">
-                A2Base
+                Moltbook-PFP
               </Box>
             </HStack>
           </DrawerHeader>

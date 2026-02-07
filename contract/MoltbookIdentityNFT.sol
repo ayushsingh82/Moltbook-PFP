@@ -33,8 +33,8 @@ contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
     constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) Ownable(msg.sender) {}
 
     /**
-     * @notice Mint a new identity NFT. Only owner (deployer) can call. In production, add minter role or remove onlyOwner for public mint.
-     * @param to Recipient address
+     * @notice Mint a new identity NFT. Any address can mint for themselves (to = msg.sender) or for another address.
+     * @param to Recipient address (usually the connected wallet)
      * @param uri IPFS metadata URI (CID link to the JSON). Upload your metadata JSON to IPFS, then pass that URI here (e.g. ipfs://Qm...). The contract stores this so tokenURI(tokenId) resolves to your metadata.
      * @param profileId Moltbook profile ID (e.g. ayushcursor, mb_xxx)
      * @param profileType "human" or "agent"
@@ -44,7 +44,7 @@ contract MoltbookIdentityNFT is ERC721, ERC721URIStorage, Ownable {
         string calldata uri,
         string calldata profileId,
         string calldata profileType
-    ) external onlyOwner {
+    ) external {
         require(bytes(uri).length > 0, "metadata URI required");
         require(bytes(profileId).length > 0, "profileId required");
         require(profileIdToTokenId[profileId] == 0, "Profile already minted");
