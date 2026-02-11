@@ -77,6 +77,18 @@ export default function ProfileViewPage() {
     }
   };
 
+  const copyPfpImageUrl = () => {
+    if (typeof window !== "undefined" && imageUrl) {
+      navigator.clipboard.writeText(imageUrl);
+      toast({
+        title: "PFP image URL copied",
+        description: "Paste this URL in Moltbook profile settings as your avatar (if supported), or open it to download the image.",
+        status: "success",
+        duration: 4000,
+      });
+    }
+  };
+
   const shareOnX = () => {
     if (typeof window === "undefined") return;
     // Use production URL in tweet so shared link is always https://moltbook-pfp.vercel.app
@@ -250,12 +262,13 @@ export default function ProfileViewPage() {
             </>
           )}
 
-          <HStack spacing={3} w="full">
+          <HStack spacing={3} w="full" flexWrap="wrap">
             <Button
               leftIcon={<Copy size={16} />}
               variant="outline"
               size="md"
               flex={1}
+              minW="120px"
               borderColor={BLUE}
               color={BLUE}
               _hover={{ bg: "blue.50" }}
@@ -268,6 +281,7 @@ export default function ProfileViewPage() {
               variant="outline"
               size="md"
               flex={1}
+              minW="120px"
               borderColor={BLUE}
               color={BLUE}
               _hover={{ bg: "blue.50" }}
@@ -275,7 +289,94 @@ export default function ProfileViewPage() {
             >
               Share on X
             </Button>
+            {imageUrl && (
+              <Button
+                leftIcon={<Copy size={16} />}
+                variant="outline"
+                size="md"
+                flex={1}
+                minW="120px"
+                borderColor={BLUE}
+                color={BLUE}
+                _hover={{ bg: "blue.50" }}
+                onClick={copyPfpImageUrl}
+              >
+                Copy PFP image URL
+              </Button>
+            )}
           </HStack>
+
+          {record && imageUrl && (
+            <Text color="gray.600" fontSize="xs" textAlign="center" px={2}>
+              To use this PFP on your Moltbook profile: paste the image URL in Moltbook profile/avatar settings if supported, or open the URL in a browser and download the image to upload on moltbook.com.
+            </Text>
+          )}
+
+          <Box
+            bg="white"
+            border="3px solid"
+            borderColor={BLUE}
+            borderRadius="lg"
+            p={5}
+            boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
+          >
+            <Heading size="sm" color={BLUE} mb={2}>
+              Already have a bot?
+            </Heading>
+            <Text color="black" fontSize="sm" mb={3}>
+              If you verified your bot via X but don&apos;t have a Moltbook login yet, your bot can help you set one up.
+            </Text>
+            <Text color="black" fontSize="sm" fontWeight="semibold" mb={1}>
+              Tell your bot:
+            </Text>
+            <Box
+              as="code"
+              display="block"
+              bg="gray.100"
+              px={3}
+              py={2}
+              borderRadius="md"
+              fontSize="sm"
+              color="black"
+              mb={3}
+            >
+              Set up my email for Moltbook login: your@email.com
+            </Box>
+            <Text color="black" fontSize="sm" fontWeight="semibold" mb={1}>
+              Or your bot can call the API directly:
+            </Text>
+            <Box
+              as="pre"
+              bg="gray.100"
+              px={3}
+              py={2}
+              borderRadius="md"
+              fontSize="xs"
+              color="black"
+              overflowX="auto"
+              mb={3}
+              whiteSpace="pre-wrap"
+              wordBreak="break-all"
+            >
+              POST /api/v1/agents/me/setup-owner-email{'\n'}
+              {`{ "email": "your@email.com" }`}
+            </Box>
+            <Text color="black" fontSize="sm">
+              You&apos;ll receive an email with a link. After clicking it, you&apos;ll verify your X account to prove you own the bot. Once complete, you can{' '}
+              <Box
+                as="a"
+                href="https://www.moltbook.com/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                color={BLUE}
+                fontWeight="bold"
+                textDecoration="underline"
+              >
+                log in here
+              </Box>
+              {' '}to manage your bot&apos;s account and rotate their API key.
+            </Text>
+          </Box>
         </VStack>
       </Container>
     </Box>

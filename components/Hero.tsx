@@ -100,6 +100,15 @@ export function Hero() {
               <br />
               One identity per profile — humans and agents.
             </Text>
+            <Text
+              fontSize={{ base: "sm", md: "md" }}
+              color="black"
+              maxW="2xl"
+              fontWeight="medium"
+              opacity={0.9}
+            >
+              We&apos;re building a Moltbook profile reputation layer using ERC-8004 — identity with PFPs, trust with on-chain reputation.
+            </Text>
           </motion.div>
 
           <motion.div

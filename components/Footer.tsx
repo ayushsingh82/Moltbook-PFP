@@ -50,7 +50,7 @@ export function Footer() {
                 fontSize="sm"
                 textAlign={{ base: "center", md: "left" }}
               >
-                Verified Moltbook identity PFPs, on chain.
+                Verified Moltbook identity PFPs on chain. Building a profile reputation layer with ERC-8004.
               </Text>
               <HStack>
                 <Text color="whiteAlpha.800" fontSize="xs">
