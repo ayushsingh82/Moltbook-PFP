@@ -18,7 +18,13 @@ import { PageHeader } from "../../../components";
 import { BadgeCheck, Copy, Share2 } from "lucide-react";
 import { useReadContract } from "wagmi";
 import { MOLTBOOK_IDENTITY_NFT_ABI, getNftContractAddress } from "../../../lib/nft-contract";
+import { getAgentRankingLabel } from "../../../lib/agent-reputation";
 import { useEffect, useState } from "react";
+
+// TODO: replace with contract or API when available
+function useAgentFollowerCount(_moltbookId: string | undefined): number {
+  return 0;
+}
 
 const BLUE = "#0000FF";
 const BLUE_200 = "#90CDF4";
@@ -54,6 +60,8 @@ export default function ProfileViewPage() {
 
   const [profileId, profileType, uri, owner] = record ?? ["", "", "", "0x"];
   const tokenId = tokenIdBigInt != null && tokenIdBigInt > BigInt(0) ? String(tokenIdBigInt) : null;
+  const followerCount = useAgentFollowerCount(moltbookId);
+  const agentRankingLabel = profileType === "agent" ? getAgentRankingLabel(followerCount) : null;
   const BASE_SEPOLIA_TOKEN_URL = `https://sepolia.basescan.org/token/${address}`;
   const verifyOnChainUrl = tokenId ? `${BASE_SEPOLIA_TOKEN_URL}?a=${tokenId}` : null;
 
@@ -246,6 +254,12 @@ export default function ProfileViewPage() {
                       {owner && owner !== "0x" ? owner : "—"}
                     </Text>
                   </HStack>
+                  {agentRankingLabel != null && (
+                    <HStack justify="space-between" mb={2}>
+                      <Text color="black" fontSize="sm">Agent ranking</Text>
+                      <Text color={BLUE} fontWeight="bold" fontFamily="mono">{agentRankingLabel}</Text>
+                    </HStack>
+                  )}
                   <Box pt={2}>
                     <Text color="black" fontSize="sm" mb={1}>Traits</Text>
                     <HStack flexWrap="wrap" gap={2}>
