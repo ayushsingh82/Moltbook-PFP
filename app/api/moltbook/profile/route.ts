@@ -35,6 +35,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const followers =
+      typeof agent.followers === "number"
+        ? agent.followers
+        : typeof agent.follower_count === "number"
+          ? agent.follower_count
+          : undefined;
+    const following =
+      typeof agent.following === "number"
+        ? agent.following
+        : typeof agent.following_count === "number"
+          ? agent.following_count
+          : undefined;
+    const stats = agent.stats && typeof agent.stats === "object" ? agent.stats : {};
+    const posts = typeof stats.posts === "number" ? stats.posts : undefined;
+    const comments = typeof stats.comments === "number" ? stats.comments : undefined;
+
     return NextResponse.json({
       success: true,
       profile: {
@@ -46,6 +62,10 @@ export async function GET(request: NextRequest) {
         isClaimed: agent.is_claimed,
         avatarUrl: agent.avatar_url,
         owner: agent.owner,
+        followers,
+        following,
+        posts,
+        comments,
       },
     });
   } catch (err) {

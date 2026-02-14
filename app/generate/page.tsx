@@ -251,6 +251,7 @@ export default function GeneratePage() {
         description: "Verified Moltbook profile PFP",
         image: imageUri,
         moltbook_profile_id: profile.profileId,
+        moltbook_username: profile.username ?? "",
         profile_type: profile.profileType,
       };
       const pinJsonRes = await fetch("/api/ipfs/pin-json", {
@@ -544,6 +545,7 @@ export default function GeneratePage() {
                       name: profile.displayName ?? profile.username ?? "Moltbook Identity",
                       description: "Verified Moltbook profile PFP",
                       moltbook_profile_id: profile.profileId,
+                      moltbook_username: profile.username ?? "",
                       profile_type: profile.profileType,
                     },
                     null,

@@ -21,9 +21,13 @@ import { MOLTBOOK_IDENTITY_NFT_ABI, getNftContractAddress } from "../../../lib/n
 import { getAgentRankingLabel } from "../../../lib/agent-reputation";
 import { useEffect, useState } from "react";
 
-// TODO: replace with contract or API when available
-function useAgentFollowerCount(_moltbookId: string | undefined): number {
-  return 0;
+/** Moltbook profile stats fetched by username (from metadata). */
+interface MoltbookStats {
+  karma?: number;
+  followers?: number;
+  following?: number;
+  posts?: number;
+  comments?: number;
 }
 
 const BLUE = "#0000FF";
@@ -42,7 +46,14 @@ export default function ProfileViewPage() {
   const params = useParams();
   const moltbookId = params.moltbook_id as string;
   const toast = useToast();
-  const [metadata, setMetadata] = useState<{ name?: string; description?: string; image?: string; profile_type?: string } | null>(null);
+  const [metadata, setMetadata] = useState<{
+    name?: string;
+    description?: string;
+    image?: string;
+    profile_type?: string;
+    moltbook_username?: string;
+  } | null>(null);
+  const [moltbookStats, setMoltbookStats] = useState<MoltbookStats | null>(null);
 
   const address = getNftContractAddress();
   const { data: record, isLoading: loadingRecord, isError: noNft } = useReadContract({
@@ -60,7 +71,7 @@ export default function ProfileViewPage() {
 
   const [profileId, profileType, uri, owner] = record ?? ["", "", "", "0x"];
   const tokenId = tokenIdBigInt != null && tokenIdBigInt > BigInt(0) ? String(tokenIdBigInt) : null;
-  const followerCount = useAgentFollowerCount(moltbookId);
+  const followerCount = moltbookStats?.followers ?? 0;
   const agentRankingLabel = profileType === "agent" ? getAgentRankingLabel(followerCount) : null;
   const BASE_SEPOLIA_TOKEN_URL = `https://sepolia.basescan.org/token/${address}`;
   const verifyOnChainUrl = tokenId ? `${BASE_SEPOLIA_TOKEN_URL}?a=${tokenId}` : null;
@@ -75,6 +86,34 @@ export default function ProfileViewPage() {
       .catch(() => setMetadata(null));
   }, [uri]);
 
+  // Fetch Moltbook profile stats by username (from metadata) so we show correct karma, followers, following
+  useEffect(() => {
+    const username =
+      metadata?.moltbook_username?.trim() ||
+      (metadata?.name && !metadata.name.startsWith("user_") ? metadata.name.trim() : "");
+    if (!username) {
+      setMoltbookStats(null);
+      return;
+    }
+    fetch(`/api/moltbook/profile?name=${encodeURIComponent(username)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.profile) {
+          const p = data.profile;
+          setMoltbookStats({
+            karma: p.karma,
+            followers: p.followers,
+            following: p.following,
+            posts: p.posts,
+            comments: p.comments,
+          });
+        } else {
+          setMoltbookStats(null);
+        }
+      })
+      .catch(() => setMoltbookStats(null));
+  }, [metadata?.moltbook_username, metadata?.name]);
+
   const imageUrl = metadata?.image ? ipfsToGateway(metadata.image) : "";
   const displayName = metadata?.name ?? (moltbookId ? `user_${moltbookId.slice(-6)}` : moltbookId);
 
@@ -82,18 +121,6 @@ export default function ProfileViewPage() {
     if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
       toast({ title: "Link copied", status: "success", duration: 2000 });
-    }
-  };
-
-  const copyPfpImageUrl = () => {
-    if (typeof window !== "undefined" && imageUrl) {
-      navigator.clipboard.writeText(imageUrl);
-      toast({
-        title: "PFP image URL copied",
-        description: "Paste this URL in Moltbook profile settings as your avatar (if supported), or open it to download the image.",
-        status: "success",
-        duration: 4000,
-      });
     }
   };
 
@@ -273,16 +300,56 @@ export default function ProfileViewPage() {
                   </Box>
                 </VStack>
               </Box>
+
+              {moltbookStats && (moltbookStats.karma != null || moltbookStats.followers != null || moltbookStats.following != null) && (
+                <Box
+                  bg="white"
+                  border="3px solid"
+                  borderColor={BLUE}
+                  borderRadius="lg"
+                  p={5}
+                  boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
+                >
+                  <Text color={BLUE} fontSize="sm" fontWeight="bold" mb={3}>
+                    Moltbook profile
+                  </Text>
+                  <HStack spacing={6} flexWrap="wrap">
+                    {moltbookStats.karma != null && (
+                      <VStack align="flex-start" spacing={0}>
+                        <Text color="gray.600" fontSize="xs">Karma</Text>
+                        <Text color="black" fontWeight="bold">{moltbookStats.karma}</Text>
+                      </VStack>
+                    )}
+                    {moltbookStats.followers != null && (
+                      <VStack align="flex-start" spacing={0}>
+                        <Text color="gray.600" fontSize="xs">Followers</Text>
+                        <Text color="black" fontWeight="bold">{moltbookStats.followers}</Text>
+                      </VStack>
+                    )}
+                    {moltbookStats.following != null && (
+                      <VStack align="flex-start" spacing={0}>
+                        <Text color="gray.600" fontSize="xs">Following</Text>
+                        <Text color="black" fontWeight="bold">{moltbookStats.following}</Text>
+                      </VStack>
+                    )}
+                    {moltbookStats.posts != null && moltbookStats.posts > 0 && (
+                      <VStack align="flex-start" spacing={0}>
+                        <Text color="gray.600" fontSize="xs">Posts</Text>
+                        <Text color="black" fontWeight="bold">{moltbookStats.posts}</Text>
+                      </VStack>
+                    )}
+                  </HStack>
+                </Box>
+              )}
             </>
           )}
 
-          <HStack spacing={3} w="full" flexWrap="wrap">
+          <HStack spacing={2} w="full" flexWrap="nowrap" overflowX="auto" pb={1}>
             <Button
               leftIcon={<Copy size={16} />}
               variant="outline"
-              size="md"
-              flex={1}
-              minW="120px"
+              size="sm"
+              flexShrink={0}
               borderColor={BLUE}
               color={BLUE}
               _hover={{ bg: "blue.50" }}
@@ -293,9 +360,8 @@ export default function ProfileViewPage() {
             <Button
               leftIcon={<Share2 size={16} />}
               variant="outline"
-              size="md"
-              flex={1}
-              minW="120px"
+              size="sm"
+              flexShrink={0}
               borderColor={BLUE}
               color={BLUE}
               _hover={{ bg: "blue.50" }}
@@ -303,94 +369,7 @@ export default function ProfileViewPage() {
             >
               Share on X
             </Button>
-            {imageUrl && (
-              <Button
-                leftIcon={<Copy size={16} />}
-                variant="outline"
-                size="md"
-                flex={1}
-                minW="120px"
-                borderColor={BLUE}
-                color={BLUE}
-                _hover={{ bg: "blue.50" }}
-                onClick={copyPfpImageUrl}
-              >
-                Copy PFP image URL
-              </Button>
-            )}
           </HStack>
-
-          {record && imageUrl && (
-            <Text color="gray.600" fontSize="xs" textAlign="center" px={2}>
-              To use this PFP on your Moltbook profile: paste the image URL in Moltbook profile/avatar settings if supported, or open the URL in a browser and download the image to upload on moltbook.com.
-            </Text>
-          )}
-
-          <Box
-            bg="white"
-            border="3px solid"
-            borderColor={BLUE}
-            borderRadius="lg"
-            p={5}
-            boxShadow={`6px 6px 0px 0px ${BLUE_200}`}
-          >
-            <Heading size="sm" color={BLUE} mb={2}>
-              Already have a bot?
-            </Heading>
-            <Text color="black" fontSize="sm" mb={3}>
-              If you verified your bot via X but don&apos;t have a Moltbook login yet, your bot can help you set one up.
-            </Text>
-            <Text color="black" fontSize="sm" fontWeight="semibold" mb={1}>
-              Tell your bot:
-            </Text>
-            <Box
-              as="code"
-              display="block"
-              bg="gray.100"
-              px={3}
-              py={2}
-              borderRadius="md"
-              fontSize="sm"
-              color="black"
-              mb={3}
-            >
-              Set up my email for Moltbook login: your@email.com
-            </Box>
-            <Text color="black" fontSize="sm" fontWeight="semibold" mb={1}>
-              Or your bot can call the API directly:
-            </Text>
-            <Box
-              as="pre"
-              bg="gray.100"
-              px={3}
-              py={2}
-              borderRadius="md"
-              fontSize="xs"
-              color="black"
-              overflowX="auto"
-              mb={3}
-              whiteSpace="pre-wrap"
-              wordBreak="break-all"
-            >
-              POST /api/v1/agents/me/setup-owner-email{'\n'}
-              {`{ "email": "your@email.com" }`}
-            </Box>
-            <Text color="black" fontSize="sm">
-              You&apos;ll receive an email with a link. After clicking it, you&apos;ll verify your X account to prove you own the bot. Once complete, you can{' '}
-              <Box
-                as="a"
-                href="https://www.moltbook.com/login"
-                target="_blank"
-                rel="noopener noreferrer"
-                color={BLUE}
-                fontWeight="bold"
-                textDecoration="underline"
-              >
-                log in here
-              </Box>
-              {' '}to manage your bot&apos;s account and rotate their API key.
-            </Text>
-          </Box>
         </VStack>
       </Container>
     </Box>

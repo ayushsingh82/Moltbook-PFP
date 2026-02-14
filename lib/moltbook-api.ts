@@ -27,6 +27,12 @@ export interface MoltbookProfileInfo {
   owner?: string;
   /** Follower count when provided by the API (e.g. followers, follower_count). */
   followers?: number;
+  /** Following count when provided by the API. */
+  following?: number;
+  /** Posts count (e.g. from stats.posts). */
+  posts?: number;
+  /** Comments/interactions count (e.g. from stats.comments). */
+  comments?: number;
   /** Raw agent object for any extra fields the API returns. */
   raw?: Record<string, unknown>;
 }
@@ -69,6 +75,17 @@ export async function fetchMoltbookProfileByUsername(
           ? agent.followers_count
           : undefined;
 
+  const following =
+    typeof agent.following === "number"
+      ? agent.following
+      : typeof agent.following_count === "number"
+        ? agent.following_count
+        : undefined;
+
+  const stats = agent.stats && typeof agent.stats === "object" ? agent.stats : {};
+  const posts = typeof stats.posts === "number" ? stats.posts : undefined;
+  const comments = typeof stats.comments === "number" ? stats.comments : undefined;
+
   return {
     profileId: agent.id ?? `mb_${agent.name}`,
     username: agent.name ?? username,
@@ -79,6 +96,9 @@ export async function fetchMoltbookProfileByUsername(
     avatarUrl: agent.avatar_url,
     owner: agent.owner,
     followers,
+    following,
+    posts,
+    comments,
     raw: agent as Record<string, unknown>,
   };
 }

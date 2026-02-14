@@ -17,12 +17,19 @@ import {
   Link as ChakraLink,
   Spinner,
   Image,
+  Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverHeader,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { PageHeader } from "../../components";
-import { ExternalLink, Bot } from "lucide-react";
+import { ExternalLink, Bot, Info } from "lucide-react";
 import { useReadContract } from "wagmi";
 import { MOLTBOOK_IDENTITY_NFT_ABI, getNftContractAddress } from "../../lib/nft-contract";
+import { getAgentReputation } from "../../lib/agent-reputation";
 import { useEffect, useState } from "react";
 
 const BLUE = "#0000FF";
@@ -42,6 +49,94 @@ function ipfsToGateway(uri: string): string {
 function truncateAddress(addr: string, start = 6, end = 4) {
   if (addr.length <= start + end) return addr;
   return `${addr.slice(0, start)}…${addr.slice(-end)}`;
+}
+
+/** Stats shown in score info popover. Fill from API when available. */
+interface ScoreInfoStats {
+  followers?: number;
+  following?: number;
+  posts?: number;
+  interactions?: number;
+}
+
+function ScoreInfoButton({
+  scoreLabel,
+  profileId,
+  stats,
+}: {
+  scoreLabel: string;
+  profileId: string;
+  stats: ScoreInfoStats;
+}) {
+  const {
+    followers = 0,
+    following = 0,
+    posts = 0,
+    interactions = 0,
+  } = stats;
+
+  return (
+    <Popover trigger="click" placement="left" isLazy>
+      <PopoverTrigger>
+        <Button
+          size="sm"
+          variant="outline"
+          borderColor={BLUE}
+          color={BLUE}
+          fontFamily="mono"
+          fontWeight="bold"
+          rightIcon={<Info size={14} />}
+          _hover={{ bg: "blue.50" }}
+        >
+          {scoreLabel}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        border="2px solid"
+        borderColor={BLUE}
+        borderRadius="lg"
+        _focus={{ outline: "none" }}
+        w="auto"
+        minW="200px"
+      >
+        <PopoverHeader
+          borderBottom="1px solid"
+          borderColor="gray.200"
+          fontWeight="bold"
+          fontSize="sm"
+          color={BLUE}
+          py={2}
+          px={4}
+        >
+          Reputation & activity
+        </PopoverHeader>
+        <PopoverBody py={3} px={4}>
+          <VStack align="stretch" spacing={2} fontSize="sm">
+            <HStack justify="space-between">
+              <Text color="gray.600">Score</Text>
+              <Text fontWeight="bold" color={BLUE}>{scoreLabel}</Text>
+            </HStack>
+            <HStack justify="space-between">
+              <Text color="gray.600">Followers</Text>
+              <Text fontWeight="medium">{followers}</Text>
+            </HStack>
+            <HStack justify="space-between">
+              <Text color="gray.600">Following</Text>
+              <Text fontWeight="medium">{following}</Text>
+            </HStack>
+            <HStack justify="space-between">
+              <Text color="gray.600">Posts</Text>
+              <Text fontWeight="medium">{posts}</Text>
+            </HStack>
+            <HStack justify="space-between">
+              <Text color="gray.600">Interactions</Text>
+              <Text fontWeight="medium">{interactions}</Text>
+            </HStack>
+          </VStack>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 function RegistryPFP({ uri, profileId }: { uri: string; profileId: string }) {
@@ -108,6 +203,13 @@ export default function RegistryPage() {
     owner: owners[i] ?? "0x",
     uri: uris[i] ?? "",
   })).filter((r) => r.profileId);
+
+  // Follower count per profile not in contract; use 0 so score = 1. When >= 20, agent-reputation.ts gives 2.
+  const followerCountByProfileId: Record<string, number> = {};
+  function getScore(row: { profileId: string }): string {
+    const count = followerCountByProfileId[row.profileId] ?? 0;
+    return String(getAgentReputation(count));
+  }
 
   const isLoading = loadingSupply || loadingRecords;
 
@@ -203,19 +305,31 @@ export default function RegistryPage() {
                   >
                     Profile Type
                   </Th>
+                  <Th
+                    color="white"
+                    fontWeight="bold"
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                    fontSize="xs"
+                    py={4}
+                    px={5}
+                    isNumeric
+                  >
+                    Score
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {isLoading ? (
                   <Tr>
-                    <Td colSpan={4} py={12} textAlign="center" color="gray.500">
+                    <Td colSpan={5} py={12} textAlign="center" color="gray.500">
                       <Spinner size="md" mr={2} />
                       Loading registry from contract…
                     </Td>
                   </Tr>
                 ) : registry.length === 0 ? (
                   <Tr>
-                    <Td colSpan={4} py={12} textAlign="center" color="gray.500">
+                    <Td colSpan={5} py={12} textAlign="center" color="gray.500">
                       No identities minted yet.
                     </Td>
                   </Tr>
@@ -287,6 +401,18 @@ export default function RegistryPage() {
                         >
                           {row.profileType}
                         </Badge>
+                      </Td>
+                      <Td py={4} px={5} isNumeric>
+                        <ScoreInfoButton
+                          scoreLabel={getScore(row)}
+                          profileId={row.profileId}
+                          stats={{
+                            followers: followerCountByProfileId[row.profileId] ?? 0,
+                            following: 0,
+                            posts: 0,
+                            interactions: 0,
+                          }}
+                        />
                       </Td>
                     </Tr>
                   ))
